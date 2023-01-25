@@ -1,0 +1,55 @@
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = [
+  "flit_core<4,>=3.7.1",
+]
+
+[project]
+name = "jyg"
+version = "0.1.0"
+readme = "README.md"
+authors = [
+    {name = "jyg contributors", email = "deathbeds@googlegroups.com"},
+]
+requires-python = ">=3.7"
+dependencies = [
+  "ipython>=8",
+  "jupyter-core>=4.7.1",
+]
+dynamic = [
+  "description",
+]
+classifiers = [
+    "Framework :: Jupyter :: JupyterLab :: 3",
+    "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
+    "Framework :: Jupyter :: JupyterLab :: Extensions",
+    "Framework :: Jupyter :: JupyterLab",
+    "Framework :: Jupyter",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3",
+]
+[project.urls]
+"Bug Tracker" = "https://github.com/deathbeds/jyg/issues"
+"Changelog" = "https://github.com/deathbeds/jyg/blob/main/CHANGELOG.md"
+"Documentation" = "https://jyg.rtfd.io"
+"Source" = "https://github.com/deathbeds/jyg"
+
+[project.scripts]
+jupyter-jyg = "jyg.jygapp:main"
+jyg = "jyg.jygapp:main"
+
+
+[tool.flit.sdist]
+include = ["src/jyg/_d"]
+
+[tool.flit.external-data]
+directory = "src/jyg/_d"
+
+[tool.doit]
+backend = "sqlite3"
+verbosity = 2
+
+[tools.doit.commands.list]
+status = true
+subtasks = true

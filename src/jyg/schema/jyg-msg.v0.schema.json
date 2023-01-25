@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/any-message"
+    }
+  ],
+  "definitions": {
+    "any-content": {
+      "title": "any content",
+      "type": ["object", "string", "number", "boolean", "array", "null"]
+    },
+    "any-message": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/any-request"
+        },
+        {
+          "$ref": "#/definitions/any-response"
+        }
+      ],
+      "title": "any message"
+    },
+    "any-message-type": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/message-type-run"
+        },
+        {
+          "$ref": "#/definitions/message-type-app-info"
+        }
+      ],
+      "title": "any message type"
+    },
+    "any-request": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/message-app-info-request"
+        },
+        {
+          "$ref": "#/definitions/message-run-request"
+        }
+      ],
+      "title": "any request"
+    },
+    "any-response": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/any-valid-response"
+        },
+        {
+          "$ref": "#/definitions/message-error-response"
+        }
+      ],
+      "title": "any response"
+    },
+    "any-valid-response": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/message-app-info-response"
+        },
+        {
+          "$ref": "#/definitions/message-run-response"
+        }
+      ],
+      "title": "any valid response"
+    },
+    "app-info": {
+      "additionalProperties": false,
+      "properties": {
+        "commands": {
+          "$ref": "#/definitions/commands-info"
+        },
+        "name": {
+          "type": "string"
+        },
+        "plugins": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "title": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": ["url", "version", "plugins", "name", "title", "commands"],
+      "title": "app info",
+      "type": "object"
+    },
+    "command-info": {
+      "additionalProperties": false,
+      "properties": {
+        "caption": {
+          "type": "string"
+        },
+        "className": {
+          "type": "string"
+        },
+        "dataset": {
+          "type": "object"
+        },
+        "icon": {
+          "type": ["string", "null"]
+        },
+        "iconClass": {
+          "type": "string"
+        },
+        "iconLabel": {
+          "type": "string"
+        },
+        "isEnabled": {
+          "type": "boolean"
+        },
+        "isToggleable": {
+          "type": "boolean"
+        },
+        "isToggled": {
+          "type": "boolean"
+        },
+        "isVisible": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "mnemonic": {
+          "type": ["string", "number"]
+        },
+        "usage": {
+          "type": "string"
+        }
+      },
+      "title": "command info",
+      "type": "object"
+    },
+    "commands-info": {
+      "additionalProperties": {
+        "$ref": "#/definitions/command-info"
+      },
+      "title": "commands info",
+      "type": "object"
+    },
+    "message-app-info-request": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "$ref": "#/definitions/any-content"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "request_type": {
+          "$ref": "#/definitions/message-type-app-info"
+        }
+      },
+      "required": ["request_id", "request_type"],
+      "title": "app info request",
+      "type": "object"
+    },
+    "message-app-info-response": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "$ref": "#/definitions/app-info"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "request_type": {
+          "$ref": "#/definitions/message-type-app-info"
+        }
+      },
+      "required": ["content", "request_id", "request_type"],
+      "title": "app info response",
+      "type": "object"
+    },
+    "message-error-response": {
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "request_type": {
+          "$ref": "#/definitions/any-message-type"
+        }
+      },
+      "required": ["error", "request_id", "request_type"],
+      "title": "error response",
+      "type": "object"
+    },
+    "message-run-request": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "$ref": "#/definitions/run-request-content"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "request_type": {
+          "$ref": "#/definitions/message-type-run"
+        }
+      },
+      "required": ["content", "request_id", "request_type"],
+      "title": "run request",
+      "type": "object"
+    },
+    "message-run-response": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "$ref": "#/definitions/any-content"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "request_type": {
+          "$ref": "#/definitions/message-type-app-info"
+        }
+      },
+      "required": ["content", "request_id", "request_type"],
+      "title": "run response",
+      "type": "object"
+    },
+    "message-type-app-info": {
+      "const": "app_info",
+      "title": "message type app info",
+      "type": "string"
+    },
+    "message-type-run": {
+      "const": "run",
+      "title": "message type run",
+      "type": "string"
+    },
+    "run-request-content": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "type": "object"
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "args"],
+      "title": "run request content",
+      "type": "object"
+    }
+  }
+}

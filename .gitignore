@@ -1,0 +1,13 @@
+__pycache__/
+_d/
+.coverage*
+.hypothesis
+.mypy_cache/
+.pabotsuitenames
+.venv/
+.yarn-packages/
+*.doit.*
+build/
+dist/
+lib/
+node_modules/

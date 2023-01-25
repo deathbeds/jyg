@@ -1,0 +1,15 @@
+{
+  "LabApp": {
+    "log_level": "DEBUG",
+    "open_browser": false
+  },
+  "ServerApp": {
+    "jpserver_extensions": {"jyg": true},
+    "tornado_settings": {
+      "page_config_data": {
+        "buildCheck": false,
+        "buildAvailable": false
+      }
+    }
+  }
+}

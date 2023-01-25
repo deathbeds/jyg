@@ -1,0 +1,92 @@
+{
+  "name": "@deathbeds/jyg",
+  "version": "0.1.0",
+  "description": "Remote commands for JupyterLab",
+  "license": "BSD-3-Clause",
+  "author": "jyg contributors",
+  "homepage": "https://github.com/deathbeds/jyg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deathbeds/jyg.git"
+  },
+  "bugs": {
+    "url": "https://github.com/deathbeds/jyg/issues"
+  },
+  "main": "lib/index.js",
+  "scripts": {
+    "build:ext": "jupyter labextension build .",
+    "build:ext:cov": "tsc -b js/tsconfig.cov.json && jlpm build:ext",
+    "build:lib": "tsc -b js",
+    "build:schema": "json2ts -i src/jyg/schema/jyg-msg.v0.schema.json | prettier --stdin-filepath x.ts > js/_msgV0.ts",
+    "watch": "run-p watch:lib watch:ext",
+    "watch:ext": "jupyter labextension watch .",
+    "watch:lib": "jlpm build:lib -w"
+  },
+  "types": "lib/index.d.ts",
+  "dependencies": {
+    "@jupyterlab/application": "3"
+  },
+  "devDependencies": {
+    "@ephesoft/webpack.istanbul.loader": "^2.2.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@jupyterlab/builder": "^3.4.8",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "eslint": "^8.24.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.8",
+    "json-schema-to-typescript": "^11.0.3",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^15.1.0",
+    "prettier": "^2.7.1",
+    "prettier-package-json": "^2.7.0",
+    "prettier-plugin-sort-json": "^1.0.0",
+    "source-map-loader": "^4.0.1",
+    "typescript": "~4.8.4",
+    "yarn-deduplicate": "^6.0.0"
+  },
+  "jupyterlab": {
+    "extension": "lib/plugin.js",
+    "outputDir": "src/jyg/_d/share/jupyter/labextensions/@deathbeds/jyg",
+    "schemaDir": "schema",
+    "sharedPackages": {
+      "@deathbeds/jupyterlab-fonts": {
+        "bundled": false,
+        "singleton": true
+      },
+      "diff": {
+        "bundled": true
+      }
+    },
+    "webpackConfig": "./webpack.config.js"
+  },
+  "nyc": {
+    "all": true,
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "extension": [
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx"
+    ],
+    "reporter": [
+      "lcov",
+      "html",
+      "text",
+      "text-summary"
+    ],
+    "require": [
+      "ts-node/register",
+      "source-map-support/register"
+    ],
+    "skip-full": true
+  },
+  "prettier": {
+    "jsonRecursiveSort": true,
+    "printWidth": 88,
+    "proseWrap": "always",
+    "singleQuote": true
+  }
+}

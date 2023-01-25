@@ -1,0 +1,44 @@
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - jupyterlab >=3.5,<4
+  - nodejs >=18,<19
+  - python >=3.8,<3.12
+  # build
+  - flit
+  - doit
+  - pip
+  - jsonschema-gentypes
+  # lint
+  - black
+  - docformatter
+  - isort
+  - mypy
+  - pydocstyle
+  - pyflakes
+  - pyproject-fmt
+  - robotframework-robocop
+  - robotframework-tidy
+  - ssort
+  # test
+  - coverage
+  - hypothesis
+  - hypothesis-jsonschema
+  - pytest-asyncio
+  - pytest-console-scripts
+  - pytest-html
+  # atest
+  - robotframework-jupyterlibrary
+  - firefox
+  - geckodriver
+  - lxml
+  - robotframework-pabot
+  # docs
+  - myst-nb
+  - sphinx
+  - pydata-sphinx-theme
+  - pkginfo
+  - python-libarchive-c
+  - pip:
+      - jupyterlite ==0.1.0b18

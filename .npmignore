@@ -1,0 +1,13 @@
+.binder/
+.eslintrc.js
+.venv/
+.yarn-packages/
+.yarnrc
+build/
+dist/
+docs/
+pyproject.toml
+src/
+__pycache__/
+*.doit.*
+.mypy_cache/
