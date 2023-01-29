@@ -1,5 +1,6 @@
 black
 doit
 flit
+jsonschema-gentypes
 jupyterlab ==3.*
 pip
