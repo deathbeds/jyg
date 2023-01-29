@@ -205,7 +205,7 @@ jobs:
         with:
           miniforge-variant: Mambaforge
           python-version: ${{ matrix.python-version }}
-          environment-file: .github/reqs/environment-test.yml
+          environment-file: .binder/environment.yml
           use-mamba: true
 
       - name: download (dist)
