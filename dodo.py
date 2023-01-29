@@ -921,64 +921,46 @@ def task_lint():
 
 def task_build():
     """Build intermediate files."""
-    yield dict(
-        name="schema:json:ts",
-        actions=[["jlpm", "build:schema"]],
-        file_dep=[P.MSG_SCHEMA_JSON, B.YARN_INTEGRITY],
-        targets=[
-            B.MSG_SCHEMA_TS,
-        ],
-    )
-
-    yield dict(
-        name="schema:json:py",
-        actions=[
-            [
-                "python",
-                P.SCRIPT_SCHEMA_TO_PY,
-                f"--python={B.MSG_SCHEMA_PY}",
-                f"--json-schema={P.MSG_SCHEMA_JSON}",
+    if not E.BUILDING_IN_CI or E.TESTING_IN_CI:
+        yield dict(
+            name="schema:json:ts",
+            actions=[["jlpm", "build:schema"]],
+            file_dep=[P.MSG_SCHEMA_JSON, B.YARN_INTEGRITY],
+            targets=[
+                B.MSG_SCHEMA_TS,
             ],
-            ["docformatter", "-i", B.MSG_SCHEMA_PY],
-            ["black", "--quiet", B.MSG_SCHEMA_PY],
-            [
-                "python",
+        )
+
+        yield dict(
+            name="schema:json:py",
+            actions=[
+                [
+                    "python",
+                    P.SCRIPT_SCHEMA_TO_PY,
+                    f"--python={B.MSG_SCHEMA_PY}",
+                    f"--json-schema={P.MSG_SCHEMA_JSON}",
+                ],
+                ["docformatter", "-i", B.MSG_SCHEMA_PY],
+                ["black", "--quiet", B.MSG_SCHEMA_PY],
+                [
+                    "python",
+                    P.SCRIPT_POST_SCHEMA_TO_PY,
+                    B.MSG_SCHEMA_PY,
+                    "Types for jyge messages.",
+                ],
+                ["ssort", B.MSG_SCHEMA_PY],
+                ["isort", "--quiet", B.MSG_SCHEMA_PY],
+                ["black", "--quiet", B.MSG_SCHEMA_PY],
+            ],
+            file_dep=[
+                P.MSG_SCHEMA_JSON,
+                B.YARN_INTEGRITY,
                 P.SCRIPT_POST_SCHEMA_TO_PY,
-                B.MSG_SCHEMA_PY,
-                "Types for jyge messages.",
+                P.SCRIPT_SCHEMA_TO_PY,
+                P.PYPROJECT_TOML,
             ],
-            ["ssort", B.MSG_SCHEMA_PY],
-            ["isort", "--quiet", B.MSG_SCHEMA_PY],
-            ["black", "--quiet", B.MSG_SCHEMA_PY],
-        ],
-        file_dep=[
-            P.MSG_SCHEMA_JSON,
-            B.YARN_INTEGRITY,
-            P.SCRIPT_POST_SCHEMA_TO_PY,
-            P.SCRIPT_SCHEMA_TO_PY,
-            P.PYPROJECT_TOML,
-        ],
-        targets=[B.MSG_SCHEMA_PY],
-    )
-
-    # yield dict(
-    #     name="js",
-    #     actions=[["jlpm", "build:lib"]],
-    #     file_dep=[*L.ALL_TS, B.MSG_SCHEMA_TS, B.YARN_INTEGRITY],
-    #     targets=[B.JS_META_TSBUILDINFO],
-    # )
-
-    # yield dict(
-    #     name="ext",
-    #     actions=[["jlpm", "build:ext"]],
-    #     file_dep=[
-    #         P.PACKAGE_JSON,
-    #         P.EXT_JS_WEBPACK,
-    #         B.JS_META_TSBUILDINFO,
-    #         B.MSG_SCHEMA_PY,
-    #     ],
-    #     targets=[B.STATIC_PKG_JSON],
-    # )
+            targets=[B.MSG_SCHEMA_PY],
+        )
 
     uptodate = [doit.tools.config_changed(dict(WITH_JS_COV=E.WITH_JS_COV))]
 
