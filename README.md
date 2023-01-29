@@ -23,12 +23,31 @@ See the [contributing guide] for a development install.
 
 ## Usage
 
+### Browser
+
+- In _Advanced Settings: Command Boards_
+  - Create a new Board with a `template` like
+    ```html
+    <button data-command-id="help:licenses">Show Licenses</button>
+    ```
+  - or more complicated
+    ```html
+    <button
+      data-command-id="apputils:change-theme"
+      data-command-args='{"theme": "JupyterLab Dark"}'
+    >
+      Set theme
+    </button>
+    ```
+- Click the _Launcher Item_ for the board
+- Click the elements in the board
+
 ### CLI
 
 #### List commands
 
 ```bash
-jyg list
+jyg list --json
 jyg ls
 jyg l
 ```

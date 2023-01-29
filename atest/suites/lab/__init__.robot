@@ -6,6 +6,8 @@ Library             JupyterLibrary
 Resource            ../../resources/Coverage.resource
 Resource            ../../resources/LabSelectors.resource
 Resource            ../../resources/Variables.resource
+Resource            ../../resources/Screenshots.resource
+Resource            ../../resources/Commands.resource
 
 Suite Setup         Set Up Lab Suite
 Suite Teardown      Tear Down Lab Suite
@@ -14,7 +16,19 @@ Test Tags           app:lab
 
 
 *** Variables ***
-${LOG_DIR}      ${OUTPUT_DIR}${/}logs
+${LOG_DIR}              ${OUTPUT_DIR}${/}logs
+@{LAB_COV_ARGS}         run
+...                     --append
+...                     --context\=robot-lab
+...                     --data-file\=${OUTPUT_DIR}${/}.lab.coverage
+...                     --branch
+...                     --source\=jyg
+...                     -m
+@{LAB_ARGS}             jupyterlab
+...                     --config\=${ROOT}${/}atest${/}fixtures${/}jupyter_config.json
+...                     --no-browser
+...                     --debug
+${BOARD_TEMPLATE}       <button data-command-id="${CMD_ID_LICENSES}">Show Licenses</button>
 
 
 *** Keywords ***
@@ -25,24 +39,38 @@ Set Up Lab Suite
     ${token} =    UUID4
     Create Directory    ${LOG_DIR}
     Wait For New Jupyter Server To Be Ready
-    ...    jupyter-lab
+    ...    coverage
     ...    ${port}
     ...    ${base_url}
     ...    ${NONE}    # notebook_dir
     ...    ${token.__str__()}
-    ...    --config\=${ROOT}${/}atest${/}fixtures${/}jupyter_config.json
-    ...    --no-browser
-    ...    --debug
+    ...    @{LAB_COV_ARGS}
+    ...    @{LAB_ARGS}
     ...    --port\=${port}
-    ...    --NotebookApp.token\='${token.__str__()}'
-    ...    --NotebookApp.base_url\='${base_url}'
+    ...    --ServerApp.token\='${token.__str__()}'
+    ...    --ServerApp.base_url\='${base_url}'
     ...    stdout=${LOG_DIR}${/}lab.log
     ...    env:HOME=${FAKE_HOME}
     Open JupyterLab
-    Disable JupyterLab Modal Command Palette
+    Initialize Settings
     Set Window Size    1366    768
     Reload Page
     Wait For JupyterLab Splash Screen
+
+Initialize Settings
+    [Documentation]    Configure the plugin
+    ${boards} =    Create Boards
+    Disable JupyterLab Modal Command Palette
+    Set JupyterLab Plugin Settings    @deathbeds/jyg    boards
+    ...    boards=${boards}
+    ...    enabled=${TRUE}
+    Set JupyterLab Plugin Settings    @deathbeds/jyg    window-proxy    enabled=${TRUE}
+
+Create Boards
+    [Documentation]    Create some boards
+    ${board} =    Create Dictionary    title=License Board    template=${BOARD_TEMPLATE}
+    &{boards} =    Create Dictionary    license-board=${board}
+    RETURN    ${boards}
 
 Tear Down Lab Suite
     [Documentation]    Do clean up stuff

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Tuple
 import traitlets as T
 from traitlets.config import LoggingConfigurable
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .handlers import CommandWebSocketHandler
 
 from . import constants as C

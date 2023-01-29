@@ -24,7 +24,7 @@ class C:
     PLATFORM = platform.system()
     PY_VERSION = "{}.{}".format(sys.version_info[0], sys.version_info[1])
     ROBOT_DRYRUN = "--dryrun"
-    NYC = ["jlpm", "nyc", "report"]
+    NYC = ["jlpm", "nyc", "report", "--offline"]
     PABOT_DEFAULTS = [
         "--artifactsinsubfolders",
         "--artifacts",
@@ -387,7 +387,7 @@ class U:
 
         return fail_count == 0
 
-    def get_robot_stem(attempt=0, extra_args=None, browser="headlessfirefox"):
+    def get_robot_stem(attempt=0, extra_args=None, browser="firefox"):
         """Get the directory in B.ROBOT for this platform/app."""
         extra_args = extra_args or []
 
@@ -692,7 +692,15 @@ def task_dev():
         file_dep=py_dep,
         targets=[B.PIP_FROZEN],
         actions=[
-            [sys.executable, "-m", "pip", "install", "-vv", *pip_args],
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "-vv",
+                *pip_args,
+                "--no-build-isolation",
+            ],
             *check,
             (doit.tools.create_folder, [B.BUILD]),
             U.pip_list,
@@ -767,6 +775,9 @@ def task_coverage():
             [
                 "coverage",
                 "html",
+                "--show-contexts",
+                "--skip-covered",
+                "--skip-empty",
                 f"--data-file={B.COVERAGE_PY}",
                 f"--directory={B.HTMLCOV_HTML.parent}",
             ]

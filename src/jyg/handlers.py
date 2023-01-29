@@ -11,7 +11,7 @@ from tornado.escape import json_decode
 
 from .schema import msg_v0 as M
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .manager import CommandManager
 
 
@@ -23,8 +23,7 @@ class CommandListHandler(APIHandler):
     def initialize(self, command_manager: "CommandManager", *args, **kwargs):
         """Prepare the handler."""
         self.command_manager = command_manager
-        if hasattr(super(), "initialize"):
-            super().initialize(*args, **kwargs)  # type: ignore
+        super().initialize(*args, **kwargs)  # type: ignore
 
     async def get(self) -> None:
         """Get the information about running/known apps."""
@@ -40,8 +39,7 @@ class CommandHandler(APIHandler):
     def initialize(self, command_manager: "CommandManager", *args, **kwargs):
         """Prepare the handler."""
         self.command_manager = command_manager
-        if hasattr(super(), "initialize"):
-            super().initialize(*args, **kwargs)  # type: ignore
+        super().initialize(*args, **kwargs)  # type: ignore
 
     async def get(self, command_id: str) -> None:
         """Get the information about a single command."""

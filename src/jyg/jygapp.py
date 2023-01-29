@@ -1,7 +1,9 @@
 """Command line apps for jyg."""
 import asyncio
+import json
 from typing import Any, Dict, List
 
+import jinja2 as J
 import traitlets as T
 from jupyter_core.application import JupyterApp
 from tornado import httpclient
@@ -27,20 +29,48 @@ class _AsyncApp(_BaseApp):
         config=False
     )
     running_servers: List[Dict[str, Any]] = T.List().tag(config=False)
+    mimetype: Any = T.Unicode("text/plain").tag(config=True)
+    mime_templates: Any = T.Dict().tag(config=True)
+
+    flags = {
+        **_BaseApp.flags,
+        "json": (
+            {"_AsyncApp": {"mimetype": "application/json"}},
+            "output json",
+        ),
+    }
+    aliases = {
+        **_BaseApp.aliases,
+        "mime": "_AsyncApp.mimetype",
+    }
+
+    @T.default("mime_templates")
+    def _default_mime_templates(self):
+        """Build some basic output template patterns."""
+        return {
+            "text/plain": "{{ dumps(report, indent=2, sort_keys=True) }}",
+            "application/json": "{{ dumps(report, sort_keys=True)  }}",
+        }
 
     @T.default("_client")
     def _default_client(self):
-        """Get a client."""
+        """Get an asynchronous HTTP client."""
         return httpclient.AsyncHTTPClient()
 
-    def start_async(self):  # pragma: no cover
-        """Start the asynchronous activities.
+    async def start_async(self) -> None:
+        """Start the asynchronous activities."""
+        report = await self.report_json()
 
-        Must be overridden in subclasses.
-        """
-        raise NotImplementedError(
-            f"""{self.__class__} does not implement start_async"""
-        )
+        if self.mimetype not in self.mime_templates:  # pragma: no cover
+            raise NotImplementedError(self.mimetype)
+
+        tmpl = J.Template(self.mime_templates[self.mimetype])
+        # TODO: async?
+        result = tmpl.render(report=report, _=self, dumps=json.dumps)
+        print(result)
+
+    async def report_json(self) -> Any:
+        raise NotImplementedError()
 
     @T.default("running_servers")
     def _default_running_servers(self) -> List[Dict[str, Any]]:
@@ -72,16 +102,28 @@ class _AsyncApp(_BaseApp):
 class JygListApp(_AsyncApp):
     """List jupyter app commands."""
 
-    async def start_async(self):
+    async def report_json(self):
         """Fetch the app info from a running jupyter app."""
-        response = await self.jyg_request("commands")
-        # TODO: handle multiple apss
-        app = response["apps"][0]
-        # TODO: nice output
-        max_len = max(*[len(command_id) for command_id in app["commands"].keys()])
-        for command_id, info in sorted(app["commands"].items()):
-            label = info.get("label", info.get("caption", ""))
-            print(f"{command_id:<{max_len}}", label)
+        return await self.jyg_request("commands")
+
+    @T.default("mime_templates")
+    def _default_mime_templates(self) -> Any:
+        mime_templates = dict(**super()._default_mime_templates())
+
+        mime_templates.update(
+            {
+                "text/plain": """
+            {%- set id_lens = [] %}
+            {%- for id in report.apps[0].commands -%}
+                {{ id_lens.append(id | count) or "" }}{%- endfor -%}
+            {%- set max_len =  id_lens | max -%}
+            {%- for id, cmd in report.apps[0].commands.items() | sort -%}
+               {{- "\n" + id }}{{ (max_len - (id | count)) * " " }}\t{{ cmd.label }}
+            {%- endfor %}
+            """,
+            }
+        )
+        return mime_templates
 
 
 class JygRunApp(_AsyncApp):
@@ -91,22 +133,35 @@ class JygRunApp(_AsyncApp):
     command_args: Dict[str, Any] = T.Dict().tag(config=False)
 
     def parse_command_line(self, argv=None):
-        """Parse extra args."""
+        """Parse extra args as Jupyter command arguments."""
         super().parse_command_line(argv)
         if self.extra_args:
             self.command_id = self.extra_args[0]
             self.command_args = parse_command_args(self.extra_args[1:])
 
-    async def start_async(self):
+    async def report_json(self):
         """Run a command."""
         if not self.command_id:
             self.log.error("need a command id")
             self.exit(1)
         bits = "commands", self.command_id
-        response = await self.jyg_request(
+        return await self.jyg_request(
             *bits, method="POST", body=json_encode(self.command_args)
         )
-        print(response)
+
+    @T.default("mime_templates")
+    def _default_mime_templates(self) -> Any:
+        mime_templates = dict(**super()._default_mime_templates())
+
+        mime_templates.update(
+            {
+                "text/plain": """
+            {%- if report.response.error %}ERROR: {{ report.response.error -}}
+            {%- else %}OK{% endif -%}
+            """,
+            }
+        )
+        return mime_templates
 
 
 class JygApp(_BaseApp):

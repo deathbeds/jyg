@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "jupyter.lab.setting-icon": "jyg:window-proxy",
+  "jupyter.lab.setting-icon-label": "Remote Commands (Window)",
+  "title": "Remote Commands (Window)",
+  "description": "JupyterLab Commands from other windows",
+  "type": "object",
+  "properties": {
+    "enabled": {
+      "description": "Allow other windows to list and execute commands.",
+      "type": "boolean",
+      "default": true
+    },
+    "allowed_origins": {
+      "description": "Patterns for origins allowed to list and execute commands",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": ["*"]
+    },
+    "blocked_origins": {
+      "description": "Patterns for origins blocked from listing and executing commands",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": ["*"]
+    },
+    "allow_same_origin": {
+      "description": "Allow listing and executing commmands from this app's base URL",
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

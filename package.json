@@ -24,12 +24,15 @@
   },
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@jupyterlab/application": "3"
+    "@jupyterlab/application": "^3.1.0",
+    "@jupyterlab/launcher": "^3.1.0",
+    "nunjucks": "^3.2.3"
   },
   "devDependencies": {
     "@ephesoft/webpack.istanbul.loader": "^2.2.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@jupyterlab/builder": "^3.4.8",
+    "@types/nunjucks": "^3.2.1",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",
     "eslint": "^8.24.0",
@@ -52,12 +55,9 @@
     "outputDir": "src/jyg/_d/share/jupyter/labextensions/@deathbeds/jyg",
     "schemaDir": "schema",
     "sharedPackages": {
-      "@deathbeds/jupyterlab-fonts": {
-        "bundled": false,
-        "singleton": true
-      },
-      "diff": {
-        "bundled": true
+      "nunjucks": {
+        "bundled": true,
+        "singleton": false
       }
     },
     "webpackConfig": "./webpack.config.js"
