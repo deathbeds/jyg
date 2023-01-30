@@ -1,22 +1,8 @@
-<a href="./_static/lab/index.html?path=README.ipynb" target="_blank" style="float: right;">
-    <i class="fa-solid fa-external-link"></i>
-    Open in new tab
-</a>
-
-<iframe
-    src="./_static/lab/index.html?path=README.ipynb"
-    style="width: 99%; border: solid 1px #999; height: 500px"
-></iframe>
+```{hint}
+Try the [demo](./demo.md) for an example of using _Command Boards_.
+```
 
 ```{include} ../README.md
-
-```
-
-```{include} ../CHANGELOG.md
-
-```
-
-```{include} ../CONTRIBUTING.md
 
 ```
 
@@ -24,4 +10,16 @@
 
 ```{include} ../LICENSE
 
+```
+
+## Learn More
+
+```{toctree}
+demo
+boards/index
+cli
+api
+schema/index
+changelog
+contributing
 ```

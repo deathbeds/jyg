@@ -1,8 +1,11 @@
 # `jyg`
 
-> remote commands for JupyterLab
+> run Jupyter browser client commands from a CLI, REST API, or other browser windows
 
 ## Installation
+
+> Note: after installing the browser and server extension, you'll need to **restart**
+> your server and/or **refresh** your Jupyter client browser session.
 
 ### Prerequisites
 
@@ -11,17 +14,32 @@
 
 ### `pip`
 
+> > TBD
+> >
+> > ```bash
+> > pip install jyg jupyterlab
+> > ```
+
+### `mamba`
+
 > TBD
 >
-> ```bash
-> pip install jyg
-> ```
+> > ```bash
+> > mamba install -c conda-forge jyg jupyterlab python >=3.8
+> > ```
+>
+> ... or use `conda` if you _must_.
 
 ### Development Install
 
 See the [contributing guide] for a development install.
 
-## Usage
+[contributing guide]: https://github.com/deathbeds/jyg/tree/main/README.md
+
+## Quick Start
+
+Before running any of the above, please ensure you have [installed](#installation) the
+`jyg` extension for your Jupyter client and server.
 
 ### Browser
 
@@ -88,4 +106,44 @@ POST http://localhost:8888/jyg/command/docmanager:open
   }
 ```
 
-[contributing guide]: https://github.com/deathbeds/jyg/tree/main/README.md
+## Troubleshooting
+
+If various pieces do not appear to be working, try some of the steps below.
+
+### Verify the installation
+
+```bash
+jupyter server extension list
+```
+
+> _You should see some output that includes:_
+>
+> ```
+> jyg enabled
+>   - Validating jyg...
+>     jyg x.x.x OK
+> ```
+
+```bash
+jupyter labextension list
+```
+
+> _You should see something like:_
+>
+> ```
+> @deathbeds/jyg v0.1.0 enabled OK
+> ```
+
+### The server is running
+
+Make sure the server is running.
+
+```bash
+jupyter server list
+```
+
+### The application is running
+
+To run or list commands, the browser must be running the client. Also look at the
+_Browser Console_ (usually shown with <kbd>f12</kbd>) for any explicit errors or
+warnings.

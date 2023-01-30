@@ -1,5 +1,6 @@
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ISignal, Signal } from '@lumino/signaling';
+import type nunjucks from 'nunjucks';
 
 import * as M from './_msgV0';
 import {
@@ -25,6 +26,8 @@ export const BRIDGE = `
     });
   }).call(this);
 `;
+
+let _N: null | typeof nunjucks = null;
 
 export class BoardManager implements IBoardManager {
   protected _windowProxy: IWindowProxyCommandSource;
@@ -59,6 +62,17 @@ export class BoardManager implements IBoardManager {
     this.onSettingsChanged();
   }
 
+  private async renderTemplate(
+    tmpl: string,
+    context: Record<string, any>
+  ): Promise<string> {
+    if (!_N) {
+      _N = await import('nunjucks');
+      _N.installJinjaCompat();
+    }
+    return _N.renderString(tmpl, context);
+  }
+
   async openBoard(id: string): Promise<void> {
     let board = this._boards.get(id);
 
@@ -66,11 +80,9 @@ export class BoardManager implements IBoardManager {
       throw new Error(`unknown board id ${id}`);
     }
 
-    const { renderString } = await import('nunjucks');
-
     const app = await this._remoteCommands.getAppInfo();
 
-    const rendered = renderString(board.template, { app });
+    const rendered = await this.renderTemplate(board.template, { app });
 
     const newWindow = window.open('about:blank', `board-${id}`);
 

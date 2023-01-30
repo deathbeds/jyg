@@ -1,4 +1,4 @@
-"""Remote commands for JupyterLab."""
+"""Main entrypoint for jyg."""
 
 from typing import Dict, List
 

@@ -11,10 +11,10 @@ ${NEXT_CLI_PROC}    ${0}
 @{CLI_COV_ARGS}     coverage
 ...                 run
 ...                 --append
-...                 --context\=robot-cli
-...                 --data-file\=${OUTPUT_DIR}${/}.cli.coverage
+...                 --context    robot-cli
+...                 --data-file    ${OUTPUT_DIR}${/}.cli.coverage
 ...                 --branch
-...                 --source\=jyg
+...                 --source    jyg
 ...                 -m
 ...                 jyg
 

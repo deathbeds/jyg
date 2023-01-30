@@ -23,11 +23,12 @@ dependencies:
   ### environment-docs.yml ###
   # docs
   - docutils >=0.18
+  - myst-nb
   - pydata-sphinx-theme
   - sphinx >=5.1,<6
   - sphinx-autobuild
   - sphinx-copybutton
-  - myst-nb
+  - sphinx-jsonschema
   # check
   - hunspell
   - hunspell-en
