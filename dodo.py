@@ -69,6 +69,7 @@ class P:
     SCRIPT_SCHEMA_TO_PY = SCRIPTS / "schema2typeddict.py"
     SCRIPT_POST_SCHEMA_TO_PY = SCRIPTS / "postschema2typeddict.py"
     ATEST = ROOT / "atest"
+    ATEST_FIXTURES = ATEST / "fixtures"
     ROBOT_SUITES = ATEST / "suites"
     REQS = CI / "reqs"
     DEMO_ENV_YAML = BINDER / "environment.yml"
@@ -463,7 +464,7 @@ class U:
             *(["--variable", f"OS:{C.PLATFORM}"]),
             *(["--variable", f"PY:{C.PY_VERSION}"]),
             *(["--variable", f"ROBOCOV:{B.ROBOCOV}"]),
-            *(["--variable", f"ROOT:{P.ROOT}"]),
+            *(["--variable", f"FIXTURES:{P.ATEST_FIXTURES}"]),
             # files
             *(["--xunit", out_dir / "xunit.xml"]),
             *(["--outputdir", out_dir]),

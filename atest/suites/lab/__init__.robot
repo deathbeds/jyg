@@ -25,7 +25,7 @@ ${LOG_DIR}              ${OUTPUT_DIR}${/}logs
 ...                     --source    jyg
 ...                     -m
 @{LAB_ARGS}             jupyterlab
-...                     --config    ${ROOT}${/}atest${/}fixtures${/}jupyter_config.json
+...                     --config    ${FIXTURES}${/}jupyter_config.json
 ...                     --no-browser
 ...                     --debug
 ${BOARD_TEMPLATE}       <button data-command-id="${CMD_ID_LICENSES}">Show Licenses</button>
@@ -34,11 +34,11 @@ ${BOARD_TEMPLATE}       <button data-command-id="${CMD_ID_LICENSES}">Show Licens
 *** Keywords ***
 Set Up Lab Suite
     [Documentation]    Ensure a testable server is running
-    [Timeout]    30s
+    [Timeout]    40s
     ${port} =    Get Unused Port
     ${base_url} =    Set Variable    /@rf/
     ${token} =    UUID4
-    Create Directory    ${LOG_DIR}
+    Initialize Directories
     Wait For New Jupyter Server To Be Ready
     ...    coverage
     ...    ${port}
@@ -53,27 +53,16 @@ Set Up Lab Suite
     ...    stdout=${LOG_DIR}${/}lab.log
     ...    env:HOME=${FAKE_HOME}
     Open JupyterLab
-    Initialize Settings
-    Set Window Size    1366    768
+    Set Window Size    1920    1080
     Reload Page
     Wait For JupyterLab Splash Screen
 
-Initialize Settings
+Initialize Directories
     [Documentation]    Configure the plugin
     [Timeout]    10s
-    ${boards} =    Create Boards
-    Disable JupyterLab Modal Command Palette
-    # hangs on windows?
-    # Set JupyterLab Plugin Settings    @deathbeds/jyg    boards
-    # ...    boards=${boards}
-    # ...    enabled=${TRUE}
-    # Set JupyterLab Plugin Settings    @deathbeds/jyg    window-proxy    enabled=${TRUE}
-
-Create Boards
-    [Documentation]    Create some boards
-    ${board} =    Create Dictionary    title=License Board    template=${BOARD_TEMPLATE}
-    &{boards} =    Create Dictionary    license-board=${board}
-    RETURN    ${boards}
+    Create Directory    ${LOG_DIR}
+    Remove Directory    ${USER_SETTINGS}    recursive=${TRUE}
+    Copy Directory    ${FIXTURES}${/}user-settings    ${USER_SETTINGS}
 
 Tear Down Lab Suite
     [Documentation]    Do clean up stuff
