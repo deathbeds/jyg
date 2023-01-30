@@ -1,5 +1,6 @@
 import { JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
 import { IFrame, MainAreaWidget } from '@jupyterlab/apputils';
+import { URLExt, PageConfig } from '@jupyterlab/coreutils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -15,6 +16,7 @@ import {
   IRemoteCommandManager,
   IWindowProxyCommandSource,
   CSS,
+  NS,
 } from './tokens';
 
 export interface IBoardManagerOptions {
@@ -23,19 +25,14 @@ export interface IBoardManagerOptions {
   shell: JupyterFrontEnd.IShell;
 }
 
+import '!!file-loader?name=[path][name].[ext]&context=.!../style/board.html';
+
+export const BOARD_URL = URLExt.join(
+  PageConfig.getOption('fullLabextensionsUrl'),
+  `${NS}/static/style/board.html`
+);
+
 const DEFAULT_LAUNCH_AREA = 'right';
-
-export const BRIDGE = `
-  ;(function(){
-    window.proxyPostMessage = (sink, message) => {
-      sink.postMessage(message);
-    }
-
-    window.addEventListener('message', (event) => {
-      false && console.warn(event);
-    });
-  }).call(this);
-`;
 
 let _N: null | typeof nunjucks = null;
 
@@ -130,6 +127,14 @@ export class BoardManager implements IBoardManager {
     this.updateWindow(newWindow, rendered, board);
   }
 
+  openPopup(id: string): Window {
+    const newWindow = window.open(BOARD_URL, `board-${id}`);
+    if (!newWindow) {
+      throw new Error(`Couldn't open window`);
+    }
+    return newWindow;
+  }
+
   openWidget(
     area: B.LaunchArea,
     id: string,
@@ -138,7 +143,7 @@ export class BoardManager implements IBoardManager {
   ): Window {
     const content = new IFrame({ sandbox: ['allow-same-origin', 'allow-scripts'] });
     content.id = `jyg-board-${id}`;
-    content.url = 'about:blank';
+    content.url = BOARD_URL;
 
     const widget = new MainAreaWidget({ content });
     widget.addClass(CSS.frame);
@@ -211,48 +216,37 @@ export class BoardManager implements IBoardManager {
     this._shell.activateById(main.id);
   }
 
-  openPopup(id: string): Window {
-    const newWindow = window.open('about:blank', `board-${id}`);
-    if (!newWindow) {
-      throw new Error(`Couldn't open window`);
-    }
-    return newWindow;
-  }
-
   updateWindow(newWindow: Window, rendered: string, board: B.CommandBoard) {
-    newWindow.document.body.innerHTML = rendered;
-    newWindow.document.title = board.title;
+    newWindow.addEventListener('load', () => {
+      newWindow.document.body.innerHTML = rendered;
+      newWindow.document.title = board.title;
+      this._windowProxy.addSource(newWindow);
 
-    const bridge = newWindow.document.createElement('script');
-    bridge.textContent = BRIDGE;
-    newWindow.document.body.appendChild(bridge);
+      const onNodeClick = (evt: Event) => {
+        const { currentTarget } = evt;
+        if (!currentTarget) {
+          return;
+        }
+        const { dataset } = currentTarget as HTMLElement;
+        const request_id = 'msg-' + +new Date();
+        const message = {
+          request_id,
+          request_type: 'run',
+          content: {
+            id: dataset.commandId,
+            args: JSON.parse(dataset.commandArgs || '{}'),
+          },
+        } as M.RunRequest;
 
-    this._windowProxy.addSource(newWindow);
+        (newWindow as any).proxyPostMessage(window, JSON.stringify(message));
+      };
 
-    const onNodeClick = (evt: Event) => {
-      const { currentTarget } = evt;
-      if (!currentTarget) {
-        return;
+      const nodes = newWindow.document.querySelectorAll('[data-command-id]');
+
+      for (const node of nodes) {
+        node.addEventListener('click', onNodeClick);
       }
-      const { dataset } = currentTarget as HTMLElement;
-      const request_id = 'msg-' + +new Date();
-      const message = {
-        request_id,
-        request_type: 'run',
-        content: {
-          id: dataset.commandId,
-          args: JSON.parse(dataset.commandArgs || '{}'),
-        },
-      } as M.RunRequest;
-
-      (newWindow as any).proxyPostMessage(window, JSON.stringify(message));
-    };
-
-    const nodes = newWindow.document.querySelectorAll('[data-command-id]');
-
-    for (const node of nodes) {
-      node.addEventListener('click', onNodeClick);
-    }
+    });
   }
 }
 

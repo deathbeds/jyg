@@ -1,10 +1,9 @@
 import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
 import { ILauncher } from '@jupyterlab/launcher';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { LabIcon } from '@jupyterlab/ui-components';
 
 import '../style/index.css';
-
-import { LabIcon } from '@jupyterlab/ui-components';
 
 import * as B from './_boards';
 import { BoardManager } from './boards';

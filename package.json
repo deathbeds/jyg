@@ -13,6 +13,9 @@
     "url": "https://github.com/deathbeds/jyg/issues"
   },
   "main": "lib/index.js",
+  "files": [
+    "{lib,schema,style,src}/**/*.{ts,tsx,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,css}"
+  ],
   "scripts": {
     "build:ext": "jupyter labextension build .",
     "build:ext:cov": "tsc -b js/tsconfig.cov.json && jlpm build:ext",
@@ -42,6 +45,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.8",
+    "file-loader": "^6.2.0",
     "json-schema-to-typescript": "^11.0.3",
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",

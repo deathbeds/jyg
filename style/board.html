@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+  <title>Command Board</title>
+  <script>
+    (function () {
+      window.proxyPostMessage = (sink, message) => {
+        sink.postMessage(message);
+      };
+
+      window.addEventListener('message', (event) => {
+        false && console.warn(event);
+      });
+    }).call(this);
+  </script>
+  <body></body>
+</head>
