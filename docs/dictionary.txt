@@ -2,6 +2,7 @@
 additionalProperties
 anyOf
 args
+backend
 Changelog
 className
 CLI
