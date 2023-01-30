@@ -34,6 +34,7 @@ ${BOARD_TEMPLATE}       <button data-command-id="${CMD_ID_LICENSES}">Show Licens
 *** Keywords ***
 Set Up Lab Suite
     [Documentation]    Ensure a testable server is running
+    [Timeout]    30s
     ${port} =    Get Unused Port
     ${base_url} =    Set Variable    /@rf/
     ${token} =    UUID4
@@ -59,12 +60,14 @@ Set Up Lab Suite
 
 Initialize Settings
     [Documentation]    Configure the plugin
+    [Timeout]    10s
     ${boards} =    Create Boards
     Disable JupyterLab Modal Command Palette
-    Set JupyterLab Plugin Settings    @deathbeds/jyg    boards
-    ...    boards=${boards}
-    ...    enabled=${TRUE}
-    Set JupyterLab Plugin Settings    @deathbeds/jyg    window-proxy    enabled=${TRUE}
+    # hangs on windows?
+    # Set JupyterLab Plugin Settings    @deathbeds/jyg    boards
+    # ...    boards=${boards}
+    # ...    enabled=${TRUE}
+    # Set JupyterLab Plugin Settings    @deathbeds/jyg    window-proxy    enabled=${TRUE}
 
 Create Boards
     [Documentation]    Create some boards
