@@ -316,8 +316,9 @@ class U:
         """Generate some tasks for robot framework."""
         extra_args = extra_args or []
         name = "robot"
+        is_dryrun = C.ROBOT_DRYRUN in extra_args
         file_dep = [*B.HISTORY, *L.ALL_ROBOT]
-        if C.ROBOT_DRYRUN in extra_args:
+        if is_dryrun:
             name = f"{name}:dryrun"
         else:
             file_dep += [B.PIP_FROZEN, *L.ALL_PY_SRC, *L.ALL_TS, *L.ALL_JSON]
@@ -326,10 +327,12 @@ class U:
             out_dir / "output.xml",
             out_dir / "log.html",
             out_dir / "report.html",
-            out_dir / ".coverage",
         ]
+        if not is_dryrun:
+            targets += [out_dir / ".coverage"]
+
         actions = []
-        if E.WITH_JS_COV and C.ROBOT_DRYRUN not in extra_args:
+        if E.WITH_JS_COV and not is_dryrun:
             targets += [B.REPORTS_NYC_LCOV]
             actions += [
                 (U.clean_some, [B.ROBOCOV, B.REPORTS_NYC]),
@@ -391,15 +394,16 @@ class U:
             cwd=B.ROBOT,
         )
 
-        subprocess.call(
-            [
-                "coverage",
-                "combine",
-                "--keep",
-                f"--data-file={B.COVERAGE_ROBOT}",
-                *B.ROBOT.rglob(".*.coverage"),
-            ]
-        )
+        if not is_dryrun:
+            subprocess.call(
+                [
+                    "coverage",
+                    "combine",
+                    "--keep",
+                    f"--data-file={B.COVERAGE_ROBOT}",
+                    *B.ROBOT.rglob(".*.coverage"),
+                ]
+            )
 
         if B.ROBOT_SCREENSHOTS.exists():
             shutil.rmtree(B.ROBOT_SCREENSHOTS)
