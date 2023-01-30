@@ -1,3 +1,7 @@
+```{hint}
+Try the [demo](./demo.md) for an example of using _Command Boards_.
+```
+
 ```{include} ../README.md
 
 ```
@@ -12,7 +16,7 @@
 
 ```{toctree}
 demo
-boards
+boards/index
 changelog
 contributing
 ```
