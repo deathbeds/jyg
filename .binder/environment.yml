@@ -55,6 +55,7 @@ dependencies:
   - coverage
   - hypothesis
   - pytest-asyncio
+  - pytest-console-scripts
   - pytest-html
   ### environment-test.yml ###
   ### environment-robot.yml ###
