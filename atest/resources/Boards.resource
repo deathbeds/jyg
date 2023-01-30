@@ -13,11 +13,11 @@ ${CSS_BOARD_SWITCH}     .jp-Jyg-SwitchArea
 Open Board From Launcher
     [Documentation]    Open a command board from the launcher
     [Arguments]    ${title}=All Commands
-    Execute JupyterLab Command    New Launcher
     ${sel} =    Set Variable    .jp-LauncherCard[title*\="${title} Command Board"]
-    Wait Until Page Contains Element    css:${sel}
+    Wait Until Element Is Visible    css:${sel}
     Click Element    css:${sel}
-    Wait Until Page Contains Element    css:${CSS_BOARD_FRAME}
+    Run Keyword And Ignore Error    Maybe Open JupyterLab Sidebar    ${title}
+    Wait Until Element Is Visible    css:${CSS_BOARD_FRAME}
 
 Click Command Element In Board
     [Documentation]    Click an element in a Command Board
@@ -33,6 +33,7 @@ Move Board To Area
     IF    "${area}" == "popup"
         Wait Until Page Does Not Contain Element    css:${CSS_BOARD_FRAME}
     ELSE
-        Wait Until Page Contains Element    css:${BOARD_MOD["${area}"]} ${CSS_BOARD_FRAME}
+        Wait Until Element Is Visible    css:${BOARD_MOD["${area}"]} ${CSS_BOARD_FRAME}
     END
     Capture Page Screenshot    ${screenshot}
+    [Teardown]    Switch Window    MAIN

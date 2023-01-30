@@ -175,6 +175,7 @@ class L:
         *P.ROOT.glob(".json"),
         *P.JS.glob("*/js/**/*.json"),
         P.MSG_SCHEMA_JSON,
+        *P.ATEST_FIXTURES.rglob("*.jupyterlab-settings"),
     ]
     ALL_MD = [
         *P.ROOT.glob("*.md"),

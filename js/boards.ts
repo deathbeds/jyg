@@ -2,6 +2,7 @@ import { JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
 import { IFrame, MainAreaWidget } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { LabIcon } from '@jupyterlab/ui-components';
 import { ISignal, Signal } from '@lumino/signaling';
 import { Widget } from '@lumino/widgets';
 import type nunjucks from 'nunjucks';
@@ -47,6 +48,8 @@ export class BoardManager implements IBoardManager {
   protected _remoteCommands: IRemoteCommandManager;
   protected _boards = new Map<string, B.CommandBoard>();
   protected _shell: JupyterFrontEnd.IShell;
+  protected _icons = new Map<string, LabIcon>();
+  protected _nextIcon = 0;
 
   constructor(options: IBoardManagerOptions) {
     this._windowProxy = options.windowProxy;
@@ -151,19 +154,7 @@ export class BoardManager implements IBoardManager {
       } else {
         this._shell.add(widget, newArea);
         movedWindow = content.node.querySelector('iframe')?.contentWindow || null;
-        if (newArea == 'main') {
-          content.title.label = board.title;
-          content.title.caption = board.description || 'A command board';
-        } else {
-          content.title.label = '';
-          const labShell = this._shell as ILabShell;
-          if (newArea == 'left') {
-            labShell.expandLeft();
-          } else if (newArea == 'right') {
-            labShell.expandRight();
-          }
-        }
-        this._shell.activateById(widget.id);
+        this.handleAreaChange(newArea, widget, board);
       }
 
       if (!movedWindow) {
@@ -175,21 +166,46 @@ export class BoardManager implements IBoardManager {
     widget.toolbar.addItem('switch-area', switchArea);
 
     const addOptions: DocumentRegistry.IOpenOptions = {};
-    // TODO: load from board
-    content.title.icon = ICONS.logo;
-    if (area == 'main') {
-      content.title.label = board.title;
-      content.title.caption = board.description || 'A command board';
-      addOptions.mode = 'split-right';
-    } else {
-      content.title.caption = board.title;
-    }
+    content.title.icon = this.getBoardIcon(board);
+    this.handleAreaChange(area, widget, board);
     this._shell.add(widget, area as string, addOptions);
     const newWindow = content.node.querySelector('iframe')?.contentWindow;
     if (!newWindow) {
       throw new Error('No window');
     }
     return newWindow;
+  }
+
+  getBoardIcon(board: B.CommandBoard): LabIcon {
+    let icon: LabIcon | null = null;
+    if (board.icon) {
+      if (!this._icons.has(board.icon)) {
+        icon = new LabIcon({
+          name: `jyg:custom-icon-${this._nextIcon++}`,
+          svgstr: board.icon,
+        });
+      }
+      icon = this._icons.get(board.icon) || null;
+    }
+    return icon || ICONS.logo;
+  }
+
+  handleAreaChange(area: B.LaunchArea, main: MainAreaWidget, board: B.CommandBoard) {
+    const labShell = this._shell as ILabShell;
+    const { content } = main;
+    if (area == 'main') {
+      content.title.label = board.title;
+      content.title.caption = board.description || 'A command board';
+    } else {
+      content.title.label = '';
+      content.title.caption = board.title;
+      if (area == 'left') {
+        labShell.expandLeft();
+      } else if (area == 'right') {
+        labShell.expandRight();
+      }
+    }
+    this._shell.activateById(main.id);
   }
 
   openPopup(id: string): Window {

@@ -16,12 +16,11 @@ Test Tags           suite:boards
 *** Test Cases ***
 Open Board
     [Documentation]    Commands in a board work.
-    Execute JupyterLab Command    Close All Tabs
     Open Board From Launcher
     Capture Page Screenshot    00-opened.png
-    Select Frame    css:.jp-Jyg-Frame iframe
+    Select Frame    css:${CSS_BOARD_FRAME}
     Click Command Element In Board    ${CMD_ID_LICENSES}
-    Wait Until Page Contains Element    css:${CSS_LAB_LICENSES}
+    Wait Until Element Is Visible    css:${CSS_LAB_LICENSES}
     Capture Page Screenshot    00-executed.png
 
 Boards Can Move

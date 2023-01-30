@@ -1,8 +1,11 @@
 {
   "boards": {
     "all-the-commands": {
-      "title": "All Commands",
-      "template": "{% for id, cmd in app.commands.items() | sort %}\n<button data-command-id='{{ id }}'>\n    {{ cmd.label }}\n    <code>{{ id }}</code>\n</button>\n{% endfor %}"
+      "description": "All Commands",
+      "icon": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><svg xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"50\" cy=\"50\" r=\"50\" fill=\"#f00\" /></svg>",
+      "launch_area": "main",
+      "template": "{% for id, cmd in app.commands.items() | sort %}\n<button data-command-id='{{ id }}'>\n    {{ cmd.label }}\n    <code>{{ id }}</code>\n</button>\n{% endfor %}",
+      "title": "All Commands"
     }
   }
 }

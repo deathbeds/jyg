@@ -87,6 +87,14 @@
   },
   "prettier": {
     "jsonRecursiveSort": true,
+    "overrides": [
+      {
+        "files": "*.jupyterlab-settings",
+        "options": {
+          "parser": "json"
+        }
+      }
+    ],
     "printWidth": 88,
     "proseWrap": "always",
     "singleQuote": true
