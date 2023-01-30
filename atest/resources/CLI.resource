@@ -34,7 +34,7 @@ Run Jyg CLI
     ${alias} =    Get Current CLI Alias
     ${rc} =    Wait For Process    ${proc}
     ${result} =    Get Process Result    ${alias}
-    Should Be Equal As Integers    ${rc.rc}    ${returncode}
+    Should Be Equal As Integers    ${rc.rc}    ${returncode}    stderr:\n${result.stdout}\nstdout:\n${result.stderr}
     RETURN    ${result}
 
 Get Current CLI Alias

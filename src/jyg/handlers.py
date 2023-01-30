@@ -70,7 +70,7 @@ class CommandHandler(APIHandler):
 class CommandWebSocketHandler(WebSocketMixin, WebSocketHandler, JupyterHandler):  # type: ignore
     """Handle bidrectional communication with a JupyterApp."""
 
-    _responses: Dict[str, asyncio.Future[M.AnyResponse]]
+    _responses: Dict[str, "asyncio.Future[M.AnyResponse]"]
 
     command_manager: "CommandManager"
 
