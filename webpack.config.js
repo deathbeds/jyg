@@ -11,6 +11,10 @@ module.exports = {
           ? ['@ephesoft/webpack.istanbul.loader']
           : ['source-map-loader'],
       },
+      {
+        test: /\.html/,
+        type: 'asset/resource',
+      },
     ],
   },
 };

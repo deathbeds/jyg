@@ -25,7 +25,7 @@ export interface IBoardManagerOptions {
   shell: JupyterFrontEnd.IShell;
 }
 
-import '!!file-loader?name=[path][name].[ext]&context=.!../style/board.html';
+import '../style/board.html';
 
 export const BOARD_URL = URLExt.join(
   PageConfig.getOption('fullLabextensionsUrl'),
