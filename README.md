@@ -17,7 +17,7 @@
 > > TBD
 > >
 > > ```bash
-> > pip install jyg
+> > pip install jyg jupyterlab
 > > ```
 
 ### `mamba`
@@ -25,16 +25,21 @@
 > TBD
 >
 > > ```bash
-> > conda install -c conda-forge jyg
+> > mamba install -c conda-forge jyg jupyterlab python >=3.8
 > > ```
+>
+> ... or use `conda` if you _must_.
 
 ### Development Install
 
 See the [contributing guide] for a development install.
 
+[contributing guide]: https://github.com/deathbeds/jyg/tree/main/README.md
+
 ## Quick Start
 
-Before running any of the above, please ensure you have [installed](#installation)
+Before running any of the above, please ensure you have [installed](#installation) the
+`jyg` extension for your Jupyter client and server.
 
 ### Browser
 
@@ -101,4 +106,42 @@ POST http://localhost:8888/jyg/command/docmanager:open
   }
 ```
 
-[contributing guide]: https://github.com/deathbeds/jyg/tree/main/README.md
+## Troubleshooting
+
+If various pieces aren't working,
+
+### Verify the installation
+
+```bash
+jupyter server extension list
+```
+
+> _You should see some output that includes:_
+>
+> ```
+> jyg enabled
+>   - Validating jyg...
+>     jyg x.x.x OK
+> ```
+
+```bash
+jupyter labextension list
+```
+
+> _You should see something like:_
+>
+> ```
+> @deathbeds/jyg v0.1.0 enabled OK
+> ```
+
+### The server is running
+
+Make sure you've started a server.
+
+```bash
+jupyter lab --debug
+```
+
+### The application is running
+
+To run or list commands, the browser must be running the client.

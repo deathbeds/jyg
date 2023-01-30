@@ -17,6 +17,9 @@ Try the [demo](./demo.md) for an example of using _Command Boards_.
 ```{toctree}
 demo
 boards/index
+cli
+api
+schema/index
 changelog
 contributing
 ```

@@ -32,6 +32,7 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "myst_nb",
     "sphinx_copybutton",
+    "sphinx-jsonschema",
 ]
 
 autosectionlabel_prefix_document = True
@@ -69,6 +70,7 @@ html_logo = "_static/logo.svg"
 html_theme_options = {
     "github_url": PROJ_DATA["project"]["urls"]["Source"],
     "use_edit_page_button": True,
+    "header_links_before_dropdown": 10,
     "icon_links": [
         {
             "name": "PyPI",
