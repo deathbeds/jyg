@@ -2,10 +2,12 @@
 import datetime
 import json
 import os
-import subprocess
+import re
 from pathlib import Path
+from typing import Any
 
 import tomli
+from sphinx.application import Sphinx
 
 os.environ.update(IN_SPHINX="1")
 
@@ -99,6 +101,37 @@ html_context = {
 }
 
 
+def patch_jsonschema() -> None:
+    """Apply some fixes to jsonschema tables."""
+    WideFormat = __import__("sphinx-jsonschema").wide_format.WideFormat
+
+    _old_transform = WideFormat.transform
+
+    def transform_add_class(self, schema):
+        table, definitions = _old_transform(self, schema)
+        table.attributes["classes"] += ["jsonschema"]
+        return table, definitions
+
+    WideFormat.transform = transform_add_class
+
+
+def patch_schema_anchors(app: Sphinx, exception: Any) -> None:
+    """Remove known duplicate anchors."""
+    if exception or "html" not in app.builder.name:
+        return
+
+    schema_out = Path(app.builder.outdir) / "schema"
+
+    for schema_html in schema_out.glob("*.html"):
+        if schema_html.name == "index.html":
+            continue
+        old_text = schema_html.read_text(encoding="utf-8")
+        schema_html.write_text(
+            re.sub(r'<span id="(.*)"></span>', "", old_text), encoding="utf-8"
+        )
+
+
 def setup(app):
     """Perform lite build if not already done."""
-    subprocess.check_call(["doit", "lite"], cwd=ROOT)
+    patch_jsonschema()
+    app.connect("build-finished", patch_schema_anchors)

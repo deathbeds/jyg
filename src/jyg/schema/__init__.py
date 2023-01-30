@@ -1,6 +1,6 @@
 """Schema for jyg."""
-from pathlib import Path
 import json
+from pathlib import Path
 
 HERE = Path(__file__).parent
 

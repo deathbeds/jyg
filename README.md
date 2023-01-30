@@ -108,7 +108,7 @@ POST http://localhost:8888/jyg/command/docmanager:open
 
 ## Troubleshooting
 
-If various pieces aren't working,
+If various pieces do not appear to be working, try some of the steps below.
 
 ### Verify the installation
 
@@ -136,12 +136,14 @@ jupyter labextension list
 
 ### The server is running
 
-Make sure you've started a server.
+Make sure the server is running.
 
 ```bash
-jupyter lab --debug
+jupyter server list
 ```
 
 ### The application is running
 
-To run or list commands, the browser must be running the client.
+To run or list commands, the browser must be running the client. Also look at the
+_Browser Console_ (usually shown with <kbd>f12</kbd>) for any explicit errors or
+warnings.
