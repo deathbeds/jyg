@@ -1,6 +1,6 @@
-## Contributing
+# Contributing
 
-### Setup
+## Setup
 
 - Start with [Mambaforge](https://conda-forge.io/miniforge)
 
@@ -9,7 +9,7 @@ mamba env update --prefix .venv --file .binder/environment.yml
 source activate ./.venv
 ```
 
-### `doit`
+## `doit`
 
 The various build tasks are managed by [`doit`](https://pydoit.org). To get up to a
 ready-to-play JupyterLab:
@@ -24,7 +24,7 @@ See other available tasks with:
 doit list
 ```
 
-### Releasing
+## Releasing
 
 - Start a [release issue](https://github.com/deathbeds/jyg/issues)
 - Follow the checklist

@@ -97,8 +97,6 @@ html_context = {
     "doc_path": "docs",
 }
 
-html_sidebars = {"**": []}
-
 
 def setup(app):
     """Perform lite build if not already done."""

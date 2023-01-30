@@ -1,10 +1,12 @@
 Changelog
+CLI
 conda
 cov
 DOM
 IFrame
 JSON
 Jupyter
+jupyterlab
 JupyterLab
 JupyterLite
 jyg
@@ -23,8 +25,7 @@ submodule
 subslide
 Subslide
 TBD
+Templating
 UI
 un
 UX
-CLI
-jupyterlab

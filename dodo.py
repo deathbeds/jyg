@@ -523,6 +523,11 @@ class U:
         except Exception as err:
             print(err)
 
+        if fail_count != 0:
+            for out_console in sorted(out_dir.rglob("robot_*.out")):
+                print(out_console.relative_to(out_dir))
+                print(out_console.read_text(encoding="utf-8"))
+
         return fail_count
 
     def check_one_spell(html: Path, findings: Path):
