@@ -1,7 +1,7 @@
 {
   "name": "@deathbeds/jyg",
   "version": "0.1.0",
-  "description": "Remote commands for JupyterLab",
+  "description": "run Jupyter browser client commands from a CLI, REST API, or other browser windows",
   "license": "BSD-3-Clause",
   "author": "jyg contributors",
   "homepage": "https://github.com/deathbeds/jyg",
