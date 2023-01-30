@@ -8,7 +8,7 @@
 /**
  * Open Command Boards in an area of the shell, or as a popup (requires accepting pop-ups)
  */
-export type LaunchArea = 'main' | 'left' | 'right' | 'top' | 'bottom' | 'popup';
+export type LaunchArea = 'main' | 'left' | 'right' | 'popup';
 
 /**
  * Lightweight Command Boards
@@ -36,6 +36,10 @@ export interface CommandBoard {
    * The human-readable to show in Command Board launchers
    */
   title: string;
+  /**
+   * Relative position of the board in its Category
+   */
+  rank?: number;
   /**
    * The category of Launcher items and Command Palette entries
    */

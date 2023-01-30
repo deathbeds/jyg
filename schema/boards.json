@@ -15,7 +15,7 @@
       "title": "Launch Area",
       "type": "string",
       "description": "Open Command Boards in an area of the shell, or as a popup (requires accepting pop-ups)",
-      "enum": ["main", "left", "right", "top", "bottom", "popup"],
+      "enum": ["main", "left", "right", "popup"],
       "default": "right"
     },
     "boards": {
@@ -40,6 +40,10 @@
         "title": {
           "description": "The human-readable to show in Command Board launchers",
           "type": "string"
+        },
+        "rank": {
+          "description": "Relative position of the board in its Category",
+          "type": "number"
         },
         "category": {
           "description": "The category of Launcher items and Command Palette entries",

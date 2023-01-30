@@ -1,7 +1,7 @@
 {
   "boards": {
     "all-the-commands": {
-      "title": "All The Commands",
+      "title": "All Commands",
       "template": "{% for id, cmd in app.commands.items() | sort %}\n<button data-command-id='{{ id }}'>\n    {{ cmd.label }}\n    <code>{{ id }}</code>\n</button>\n{% endfor %}"
     }
   }

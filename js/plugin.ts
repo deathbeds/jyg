@@ -4,6 +4,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 import '../style/index.css';
 
+import * as B from './_boards';
 import { BoardManager } from './boards';
 import { ICONS } from './icons';
 import { RemoteCommandManager } from './manager';
@@ -14,7 +15,6 @@ import {
   CommandIds,
   IWindowProxyCommandSource,
   IBoardManager,
-  IBoard,
 } from './tokens';
 
 const corePlugin: JupyterFrontEndPlugin<IRemoteCommandManager> = {
@@ -84,16 +84,16 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
     windowProxy: IWindowProxyCommandSource,
     launcher?: ILauncher
   ) => {
-    const boards = new BoardManager({ windowProxy, remoteCommands });
+    const { commands, shell } = app;
 
-    const { commands } = app;
+    const boards = new BoardManager({ windowProxy, remoteCommands, shell });
 
     commands.addCommand(CommandIds.openBoard, {
       icon: ICONS.logo,
       label: (args?: any): string => {
         const { id } = args;
         if (id) {
-          return `Open Command Board ${boards.getBoard(id)?.title || id}`;
+          return `${boards.getBoard(id)?.title || id} Command Board`;
         }
         return 'Unknown Command Board';
       },
@@ -106,7 +106,7 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
         boards.settings = settings;
         const hasLauncher: string[] = [];
 
-        function makeLauncherItem(boardId: string, board: IBoard) {
+        function makeLauncherItem(boardId: string, board: B.CommandBoard) {
           launcher?.add({
             command: CommandIds.openBoard,
             metadata: board as any,
