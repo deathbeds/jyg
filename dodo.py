@@ -1093,7 +1093,6 @@ def task_serve():
     yield dict(
         name="lab",
         uptodate=[lambda: False],
-        task_dep=["dev:ext:server"],
         file_dep=[B.ENV_PKG_JSON, B.PIP_FROZEN],
         actions=[doit.tools.PythonInteractiveAction(lab)],
     )
