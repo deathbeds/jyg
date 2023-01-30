@@ -23,7 +23,9 @@ Click Command Element In Board
     [Documentation]    Click an element in a Command Board
     [Arguments]    ${command_id}
     Select Frame    css:${CSS_BOARD_FRAME}
-    Click Element    css:[data-command-id\="${id}"]
+    ${sel} =    Set Variable    [data-command-id\="${command_id}"]
+    Wait Until Element Is Visible    css:${sel}
+    Click Element    css:${sel}
     [Teardown]    Unselect Frame
 
 Move Board To Area

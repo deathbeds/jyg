@@ -18,7 +18,6 @@ Open Board
     [Documentation]    Commands in a board work.
     Open Board From Launcher
     Capture Page Screenshot    00-opened.png
-    Select Frame    css:${CSS_BOARD_FRAME}
     Click Command Element In Board    ${CMD_ID_LICENSES}
     Wait Until Element Is Visible    css:${CSS_LAB_LICENSES}
     Capture Page Screenshot    00-executed.png

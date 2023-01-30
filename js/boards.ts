@@ -176,14 +176,17 @@ export class BoardManager implements IBoardManager {
     return newWindow;
   }
 
-  getBoardIcon(board: B.CommandBoard): LabIcon {
+  getBoardIcon(board: B.CommandBoard | null): LabIcon {
     let icon: LabIcon | null = null;
-    if (board.icon) {
+    if (board?.icon) {
       if (!this._icons.has(board.icon)) {
-        icon = new LabIcon({
-          name: `jyg:custom-icon-${this._nextIcon++}`,
-          svgstr: board.icon,
-        });
+        this._icons.set(
+          board.icon,
+          new LabIcon({
+            name: `jyg:custom-icon-${this._nextIcon++}`,
+            svgstr: board.icon,
+          })
+        );
       }
       icon = this._icons.get(board.icon) || null;
     }

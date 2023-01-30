@@ -4,6 +4,8 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 import '../style/index.css';
 
+import { LabIcon } from '@jupyterlab/ui-components';
+
 import * as B from './_boards';
 import { BoardManager } from './boards';
 import { ICONS } from './icons';
@@ -89,7 +91,15 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
     const boards = new BoardManager({ windowProxy, remoteCommands, shell });
 
     commands.addCommand(CommandIds.openBoard, {
-      icon: ICONS.logo,
+      icon: (args?: any): LabIcon => {
+        let icon = ICONS.logo;
+        const { id } = args;
+        if (id) {
+          const board = boards.getBoard(id);
+          icon = boards.getBoardIcon(board);
+        }
+        return icon;
+      },
       label: (args?: any): string => {
         const { id } = args;
         if (id) {
