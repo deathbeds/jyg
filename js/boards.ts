@@ -1,12 +1,14 @@
 import { JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
 import { IFrame, MainAreaWidget } from '@jupyterlab/apputils';
-import { URLExt, PageConfig } from '@jupyterlab/coreutils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { LabIcon } from '@jupyterlab/ui-components';
+import { PromiseDelegate } from '@lumino/coreutils';
 import { ISignal, Signal } from '@lumino/signaling';
 import { Widget } from '@lumino/widgets';
 import type nunjucks from 'nunjucks';
+
+import * as BOARD_HTML from '../style/board.html';
 
 import * as B from './_boards';
 import * as M from './_msgV0';
@@ -16,7 +18,6 @@ import {
   IRemoteCommandManager,
   IWindowProxyCommandSource,
   CSS,
-  NS,
 } from './tokens';
 
 export interface IBoardManagerOptions {
@@ -25,13 +26,7 @@ export interface IBoardManagerOptions {
   shell: JupyterFrontEnd.IShell;
 }
 
-import '../style/board.html';
-
-export const BOARD_URL = URLExt.join(
-  PageConfig.getOption('fullLabextensionsUrl'),
-  `${NS}/static/style/board.html`
-);
-
+const BOARD_URL = BOARD_HTML.default;
 const DEFAULT_LAUNCH_AREA = 'right';
 
 let _N: null | typeof nunjucks = null;
@@ -47,11 +42,33 @@ export class BoardManager implements IBoardManager {
   protected _shell: JupyterFrontEnd.IShell;
   protected _icons = new Map<string, LabIcon>();
   protected _nextIcon = 0;
+  protected _realUrl = new PromiseDelegate<string>();
 
   constructor(options: IBoardManagerOptions) {
     this._windowProxy = options.windowProxy;
     this._remoteCommands = options.remoteCommands;
     this._shell = options.shell;
+    this.getRealUrl().catch(console.warn);
+  }
+
+  async getRealUrl() {
+    const res = await fetch(BOARD_URL);
+    const text = await res.text();
+
+    const realName = text.match(/[^"]+\.html/);
+
+    if (realName == null) {
+      this._realUrl.reject(`Couldn't find real board URL.`);
+      return;
+    }
+
+    const realUrl = BOARD_URL.replace(/([^/]+.html)/, realName[0]);
+
+    this._realUrl.resolve(realUrl);
+  }
+
+  get realUrl(): Promise<string> {
+    return this._realUrl.promise;
   }
 
   get boardsChanged(): ISignal<IBoardManager, void> {
@@ -111,6 +128,8 @@ export class BoardManager implements IBoardManager {
       throw new Error(`unknown board id ${id}`);
     }
 
+    const url = await this.realUrl;
+
     const app = await this._remoteCommands.getAppInfo();
 
     const rendered = await this.renderTemplate(board.template, { app });
@@ -119,16 +138,16 @@ export class BoardManager implements IBoardManager {
 
     let newWindow: Window;
     if (area == 'popup') {
-      newWindow = this.openPopup(id);
+      newWindow = this.openPopup(url, id);
     } else {
-      newWindow = this.openWidget(area, id, rendered, board);
+      newWindow = this.openWidget(url, area, id, rendered, board);
     }
 
     this.updateWindow(newWindow, rendered, board);
   }
 
-  openPopup(id: string): Window {
-    const newWindow = window.open(BOARD_URL, `board-${id}`);
+  openPopup(url: string, id: string): Window {
+    const newWindow = window.open(url, `board-${id}`);
     if (!newWindow) {
       throw new Error(`Couldn't open window`);
     }
@@ -136,6 +155,7 @@ export class BoardManager implements IBoardManager {
   }
 
   openWidget(
+    url: string,
     area: B.LaunchArea,
     id: string,
     rendered: string,
@@ -143,7 +163,7 @@ export class BoardManager implements IBoardManager {
   ): Window {
     const content = new IFrame({ sandbox: ['allow-same-origin', 'allow-scripts'] });
     content.id = `jyg-board-${id}`;
-    content.url = BOARD_URL;
+    content.url = url;
 
     const widget = new MainAreaWidget({ content });
     widget.addClass(CSS.frame);
@@ -154,7 +174,7 @@ export class BoardManager implements IBoardManager {
       const newArea = switchArea.area;
       let movedWindow: Window | null;
       if (newArea == 'popup') {
-        movedWindow = this.openPopup(id);
+        movedWindow = this.openPopup(url, id);
         widget.dispose();
       } else {
         this._shell.add(widget, newArea);
@@ -216,10 +236,22 @@ export class BoardManager implements IBoardManager {
     this._shell.activateById(main.id);
   }
 
+  svgToDataURI(svgstr: string) {
+    return `data:image/svg+xml;base64,${btoa(svgstr)}`;
+  }
+
   updateWindow(newWindow: Window, rendered: string, board: B.CommandBoard) {
     newWindow.addEventListener('load', () => {
       newWindow.document.body.innerHTML = rendered;
       newWindow.document.title = board.title;
+
+      const favicon = newWindow.document.createElement('link');
+      favicon.rel = 'shortcut icon';
+      favicon.type = 'image/svg+xml';
+      favicon.href = this.svgToDataURI(board.icon || ICONS.logo.svgstr);
+
+      newWindow.document.head.appendChild(favicon);
+
       this._windowProxy.addSource(newWindow);
 
       const onNodeClick = (evt: Event) => {
