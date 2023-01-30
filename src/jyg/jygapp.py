@@ -1,7 +1,7 @@
 """Command line apps for jyg."""
 import asyncio
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, cast
 
 import jinja2 as J
 import traitlets as T
@@ -10,6 +10,7 @@ from tornado import httpclient
 from tornado.escape import json_decode, json_encode
 
 from ._version import __version__
+from .schema import msg_v0 as M
 from .utils import parse_command_args
 
 
@@ -45,7 +46,7 @@ class _AsyncApp(_BaseApp):
     }
 
     @T.default("mime_templates")
-    def _default_mime_templates(self):
+    def _default_mime_templates(self) -> Dict[str, str]:
         """Build some basic output template patterns."""
         return {
             "text/plain": "{{ dumps(report, indent=2, sort_keys=True) }}",
@@ -53,7 +54,7 @@ class _AsyncApp(_BaseApp):
         }
 
     @T.default("_client")
-    def _default_client(self):
+    def _default_client(self) -> httpclient.AsyncHTTPClient:
         """Get an asynchronous HTTP client."""
         return httpclient.AsyncHTTPClient()
 
@@ -79,22 +80,23 @@ class _AsyncApp(_BaseApp):
 
         return [*list_running_servers()]
 
-    def jyg_url(self, *bits: str):
+    def jyg_url(self, *bits: str) -> str:
         """Get the jyg API URL."""
         from jupyter_server.utils import url_path_join as ujoin
 
         # TODO: handle multiple servers
         server = self.running_servers[0]
-        return ujoin(server["url"], "jyg", *bits) + f"""?token={server["token"]}"""
+        url = ujoin(server["url"], "jyg", *bits) + f"""?token={server["token"]}"""
+        return f"{url}"
 
-    async def jyg_request(self, *bits, **fetch_kwargs):
+    async def jyg_request(self, *bits: str, **fetch_kwargs: Any) -> M.AnyResponse:
         """Make a jyg request."""
         url = self.jyg_url(*bits)
         response = await self._client.fetch(url, **fetch_kwargs)
         # TODO: use header
-        return json_decode(response.body)
+        return cast(M.AnyResponse, json_decode(response.body))
 
-    def start(self):
+    def start(self) -> None:
         """Start the loop and run the start_async method."""
         asyncio.get_event_loop().run_until_complete(self.start_async())
 
@@ -102,7 +104,7 @@ class _AsyncApp(_BaseApp):
 class JygListApp(_AsyncApp):
     """List jupyter app commands."""
 
-    async def report_json(self):
+    async def report_json(self) -> Any:
         """Fetch the app info from a running jupyter app."""
         return await self.jyg_request("commands")
 
@@ -132,14 +134,14 @@ class JygRunApp(_AsyncApp):
     command_id: str = T.Unicode(help="the command to run").tag(config=True)
     command_args: Dict[str, Any] = T.Dict().tag(config=False)
 
-    def parse_command_line(self, argv=None):
+    def parse_command_line(self, argv: Optional[List[str]] = None) -> None:
         """Parse extra args as Jupyter command arguments."""
         super().parse_command_line(argv)
         if self.extra_args:
             self.command_id = self.extra_args[0]
             self.command_args = parse_command_args(self.extra_args[1:])
 
-    async def report_json(self):
+    async def report_json(self) -> M.AnyResponse:
         """Run a command."""
         if not self.command_id:
             self.log.error("need a command id")

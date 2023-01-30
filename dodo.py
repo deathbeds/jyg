@@ -910,9 +910,7 @@ def task_lint():
         name="py:mypy",
         file_dep=[*L.ALL_BLACK, *B.HISTORY, P.PYPROJECT_TOML],
         task_dep=["lint:py:black"],
-        actions=[
-            ["mypy", f"--cache-dir={B.MYPY_CACHE}", "--sqlite-cache", *L.ALL_PY_SRC]
-        ],
+        actions=[["mypy", *L.ALL_PY_SRC]],
     )
 
     yield dict(

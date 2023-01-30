@@ -53,3 +53,22 @@ verbosity = 2
 [tools.doit.commands.list]
 status = true
 subtasks = true
+
+[tool.mypy]
+cache_dir = 'build/.mypy_cache'
+sqlite_cache = true
+# language settings
+python_version = '3.8'
+allow_redefinition = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = [
+    'importlib.metadata',
+]
+ignore_missing_imports = true

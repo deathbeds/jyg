@@ -28,8 +28,10 @@ class CommandManager(LoggingConfigurable):
 
     async def get_apps(self) -> Tuple[Any, ...]:
         """Get all info from subscribed apps."""
-        return await asyncio.gather(
-            *[handler.jyg_request(C.APP_INFO) for handler in self.handlers]
+        return tuple(
+            await asyncio.gather(
+                *[handler.jyg_request(C.APP_INFO) for handler in self.handlers]
+            )
         )
 
     async def run(self, command_id: str, args: Any) -> Any:

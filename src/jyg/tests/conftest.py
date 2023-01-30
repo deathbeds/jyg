@@ -2,7 +2,7 @@
 import os
 import platform
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Iterator
 from unittest import mock
 
 import pytest
@@ -30,7 +30,7 @@ class TScriptRunner:
 
 
 @pytest.fixture
-def tmp_home(tmp_path: Path):
+def tmp_home(tmp_path: Path) -> Iterator[Path]:
     """Run a test in an empty home dir."""
     home = tmp_path / "__home__"
     with mock.patch.dict(os.environ, {"HOME": str(home)}):

@@ -6,7 +6,7 @@ from .handlers import add_handlers
 from .manager import CommandManager
 
 
-def load_jupyter_server_extension(nbapp: ServerApp):
+def load_jupyter_server_extension(nbapp: ServerApp) -> None:
     """Create a CommandManager and add handlers."""
     manager = CommandManager(parent=nbapp)
     add_handlers(nbapp, manager)

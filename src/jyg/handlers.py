@@ -20,10 +20,12 @@ class CommandListHandler(APIHandler):
 
     command_manager: "CommandManager"
 
-    def initialize(self, command_manager: "CommandManager", *args, **kwargs):
+    def initialize(
+        self, command_manager: "CommandManager", *args: Any, **kwargs: Any
+    ) -> None:
         """Prepare the handler."""
         self.command_manager = command_manager
-        super().initialize(*args, **kwargs)  # type: ignore
+        super().initialize(*args, **kwargs)
 
     async def get(self) -> None:
         """Get the information about running/known apps."""
@@ -36,10 +38,12 @@ class CommandHandler(APIHandler):
 
     command_manager: "CommandManager"
 
-    def initialize(self, command_manager: "CommandManager", *args, **kwargs):
+    def initialize(
+        self, command_manager: "CommandManager", *args: Any, **kwargs: Any
+    ) -> None:
         """Prepare the handler."""
         self.command_manager = command_manager
-        super().initialize(*args, **kwargs)  # type: ignore
+        super().initialize(*args, **kwargs)
 
     async def get(self, command_id: str) -> None:
         """Get the information about a single command."""
@@ -70,12 +74,14 @@ class CommandWebSocketHandler(WebSocketMixin, WebSocketHandler, JupyterHandler):
 
     command_manager: "CommandManager"
 
-    def initialize(self, command_manager: "CommandManager", *args, **kwargs):
+    def initialize(
+        self, command_manager: "CommandManager", *args: Any, **kwargs: Any
+    ) -> None:
         """Prepare the handler."""
         self._responses = {}
         self.command_manager = command_manager
         if hasattr(super(), "initialize"):
-            super().initialize(*args, **kwargs)  # type: ignore
+            super().initialize(*args, **kwargs)
 
     def open(self, *args: str, **kwargs: str) -> None:
         """Handle a new websocket."""
@@ -95,7 +101,7 @@ class CommandWebSocketHandler(WebSocketMixin, WebSocketHandler, JupyterHandler):
 
     async def jyg_request(
         self, request_type: M.AnyMessageType, content: M.AnyContent = None
-    ):
+    ) -> Any:
         """Make a jyg request and wait for the response."""
         request_id = str(uuid4())
         request = dict(
@@ -112,7 +118,7 @@ class CommandWebSocketHandler(WebSocketMixin, WebSocketHandler, JupyterHandler):
             return cast(M.AnyValidResponse, response)["content"]
 
 
-def add_handlers(nbapp: ServerApp, command_manager: "CommandManager"):
+def add_handlers(nbapp: ServerApp, command_manager: "CommandManager") -> None:
     """Add Command routes to the notebook server web application."""
     jyg_url = ujoin(nbapp.base_url, "jyg")
     re_command = "(?P<command_id>.+)"
