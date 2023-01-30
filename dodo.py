@@ -170,7 +170,9 @@ class L:
     ALL_DOCS_MD = [*P.DOCS.rglob("*.md")]
     ALL_PY_SRC = [*P.PY_SRC.rglob("*.py")]
     ALL_BLACK = [P.DODO, *ALL_PY_SRC, *P.DOCS_PY, *P.PY_SCRIPTS]
-    ALL_CSS = [*P.DOCS_STATIC.rglob("*.css"), *P.JS.glob("*/style/**/*.css")]
+    ALL_SRC_CSS = [*(P.ROOT / "style").rglob("*.css")]
+    ALL_STYLE_ASSETS = [*P.JS.glob("style/**/*")]
+    ALL_CSS = [*P.DOCS_STATIC.rglob("*.css"), *ALL_SRC_CSS]
     ALL_JSON = [
         *P.ROOT.glob(".json"),
         *P.JS.glob("*/js/**/*.json"),
@@ -992,7 +994,13 @@ def task_build():
 
     uptodate = [doit.tools.config_changed(dict(WITH_JS_COV=E.WITH_JS_COV))]
 
-    ext_dep = [P.PACKAGE_JSON, P.EXT_JS_WEBPACK, B.YARN_INTEGRITY]
+    ext_dep = [
+        P.PACKAGE_JSON,
+        P.EXT_JS_WEBPACK,
+        B.YARN_INTEGRITY,
+        *L.ALL_CSS,
+        *L.ALL_STYLE_ASSETS,
+    ]
 
     if E.WITH_JS_COV:
         ext_task = "build:ext:cov"

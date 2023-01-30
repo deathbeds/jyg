@@ -6,7 +6,7 @@ Documentation       Variables and keywords for Command Boards
 ${CSS_BOARD_FRAME}      .jp-Jyg-Frame iframe
 ${CSS_BOARD_SWITCH}     .jp-Jyg-SwitchArea select
 @{BOARD_AREA}           left    main    right
-&{BOARD_MOD}            left=.jp-left-stack    right=.jp-right-stack    main=.jp-main-dock-panel
+&{BOARD_MOD}            left=\#jp-left-stack    right=\#jp-right-stack    main=\#jp-main-dock-panel
 
 
 *** Keywords ***

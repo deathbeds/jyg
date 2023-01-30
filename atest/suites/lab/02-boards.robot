@@ -9,6 +9,7 @@ Resource            ../../resources/LabSelectors.resource
 Resource            ../../resources/Commands.resource
 
 Suite Setup         Set Attempt Screenshot Directory    lab${/}boards
+Test Setup          Execute JupyterLab Command    Close All Tabs
 
 Test Tags           suite:boards
 
