@@ -17,6 +17,11 @@ some useful information:
 
 ## Cookbook
 
+```{hint}
+Here are some useful starting points for command boards. These can be pasted into the
+_Advanced Settings &raquo; Command Boards &raquo; boards_ section.
+```
+
 ### Show all commands as buttons
 
 ```html

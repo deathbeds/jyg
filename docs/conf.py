@@ -69,7 +69,6 @@ html_logo = "_static/logo.svg"
 html_theme_options = {
     "github_url": PROJ_DATA["project"]["urls"]["Source"],
     "use_edit_page_button": True,
-    "logo": dict(text=PROJ_DATA["project"]["name"]),
     "icon_links": [
         {
             "name": "PyPI",

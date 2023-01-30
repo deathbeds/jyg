@@ -1,8 +1,11 @@
 # `jyg`
 
-> remote commands for JupyterLab
+> run Jupyter browser client commands from a CLI, REST API, or other browser windows
 
 ## Installation
+
+> Note: after installing the browser and server extension, you'll need to **restart**
+> your server and/or **refresh** your Jupyter client browser session.
 
 ### Prerequisites
 
@@ -11,17 +14,27 @@
 
 ### `pip`
 
+> > TBD
+> >
+> > ```bash
+> > pip install jyg
+> > ```
+
+### `mamba`
+
 > TBD
 >
-> ```bash
-> pip install jyg
-> ```
+> > ```bash
+> > conda install -c conda-forge jyg
+> > ```
 
 ### Development Install
 
 See the [contributing guide] for a development install.
 
-## Usage
+## Quick Start
+
+Before running any of the above, please ensure you have [installed](#installation)
 
 ### Browser
 
