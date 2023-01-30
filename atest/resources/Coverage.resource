@@ -14,10 +14,7 @@ Get Next Coverage File
 
 Capture Page Coverage
     [Documentation]    Fetch coverage data from the browser.
-    [Arguments]    ${name}=${EMPTY}
-    IF    not '''${name}'''
-        ${name} =    Get Next Coverage File
-    END
+    ${name} =    Get Next Coverage File
     ${cov_json} =    Execute Javascript
     ...    return window.__coverage__ && JSON.stringify(window.__coverage__, null, 2)
     IF    ${cov_json}

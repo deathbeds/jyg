@@ -19,13 +19,13 @@ Test Tags           app:lab
 ${LOG_DIR}              ${OUTPUT_DIR}${/}logs
 @{LAB_COV_ARGS}         run
 ...                     --append
-...                     --context\=robot-lab
-...                     --data-file\=${OUTPUT_DIR}${/}.lab.coverage
+...                     --context    robot-lab
+...                     --data-file    ${OUTPUT_DIR}${/}.lab.coverage
 ...                     --branch
-...                     --source\=jyg
+...                     --source    jyg
 ...                     -m
 @{LAB_ARGS}             jupyterlab
-...                     --config\=${ROOT}${/}atest${/}fixtures${/}jupyter_config.json
+...                     --config    ${ROOT}${/}atest${/}fixtures${/}jupyter_config.json
 ...                     --no-browser
 ...                     --debug
 ${BOARD_TEMPLATE}       <button data-command-id="${CMD_ID_LICENSES}">Show Licenses</button>
@@ -46,9 +46,9 @@ Set Up Lab Suite
     ...    ${token.__str__()}
     ...    @{LAB_COV_ARGS}
     ...    @{LAB_ARGS}
-    ...    --port\=${port}
-    ...    --ServerApp.token\='${token.__str__()}'
-    ...    --ServerApp.base_url\='${base_url}'
+    ...    --port    ${port}
+    ...    --ServerApp.token    ${token.__str__()}
+    ...    --ServerApp.base_url    ${base_url}
     ...    stdout=${LOG_DIR}${/}lab.log
     ...    env:HOME=${FAKE_HOME}
     Open JupyterLab
