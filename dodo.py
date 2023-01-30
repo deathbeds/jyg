@@ -939,7 +939,7 @@ def task_lint():
 
 def task_build():
     """Build intermediate files."""
-    if not E.BUILDING_IN_CI or E.TESTING_IN_CI:
+    if not (E.IN_CI or E.IN_BINDER or E.IN_RTD):
         yield dict(
             name="schema:json:ts",
             actions=[["jlpm", "build:schema"]],
