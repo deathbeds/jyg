@@ -8,6 +8,8 @@ Resource            ../resources/Screenshots.resource
 Suite Setup         Set Up Root Suite
 Suite Teardown      Tear Down Root Suite
 
+Test Timeout        5 minutes
+
 Test Tags           attempt:${attempt}    os:${os}    py:${py}
 
 
