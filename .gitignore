@@ -1,7 +1,9 @@
 __pycache__/
 _d/
+.cache/
 .coverage*
 .hypothesis
+.ipynb_checkpoints/
 .mypy_cache/
 .pabotsuitenames
 .venv/

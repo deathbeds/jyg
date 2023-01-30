@@ -1,0 +1,20 @@
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - python >=3.11,<3.12
+  ### environment-base.yml ###
+  - doit-with-toml
+  - jupyterlab >=3.5.2,<4
+  - pip
+  - python >=3.8,<3.12
+  ### environment-base.yml ###
+  ### environment-build.yml ###
+  # runtimes
+  - nodejs >=16,!=17.*,<19
+  # build
+  - jsonschema-gentypes
+  - flit >=3.7.1
+  - twine
+  ### environment-build.yml ###

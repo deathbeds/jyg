@@ -1,0 +1,10 @@
+{
+  "jupyter-lite-schema-version": 0,
+  "jupyter-config-data": {
+    "appName": "jyg",
+    "exposeAppInBrowser": true,
+    "disabledExtensions": [
+      "@deathbeds/jyg:websocket"
+    ]
+  }
+}

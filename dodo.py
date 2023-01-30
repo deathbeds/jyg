@@ -70,6 +70,28 @@ class P:
     SCRIPT_POST_SCHEMA_TO_PY = SCRIPTS / "postschema2typeddict.py"
     ATEST = ROOT / "atest"
     ROBOT_SUITES = ATEST / "suites"
+    REQS = CI / "reqs"
+    DEMO_ENV_YAML = BINDER / "environment.yml"
+    TEST_ENV_YAML = REQS / "environment-test.yml"
+    DOCS_ENV_YAML = REQS / "environment-docs.yml"
+    BASE_ENV_YAML = REQS / "environment-base.yml"
+    BUILD_ENV_YAML = REQS / "environment-build.yml"
+    LINT_ENV_YAML = REQS / "environment-lint.yml"
+    ROBOT_ENV_YAML = REQS / "environment-robot.yml"
+    ENV_INHERIT = {
+        BUILD_ENV_YAML: [BASE_ENV_YAML],
+        DEMO_ENV_YAML: [
+            BASE_ENV_YAML,
+            BUILD_ENV_YAML,
+            DOCS_ENV_YAML,
+            LINT_ENV_YAML,
+            ROBOT_ENV_YAML,
+            TEST_ENV_YAML,
+        ],
+        DOCS_ENV_YAML: [BUILD_ENV_YAML, BASE_ENV_YAML],
+        TEST_ENV_YAML: [BASE_ENV_YAML, BUILD_ENV_YAML, ROBOT_ENV_YAML],
+        LINT_ENV_YAML: [BASE_ENV_YAML, BUILD_ENV_YAML, ROBOT_ENV_YAML],
+    }
 
 
 class E:
@@ -132,8 +154,10 @@ class B:
     ROBOT_SCREENSHOTS = ROBOT / "screenshots"
     ROBOT_LOG_HTML = ROBOT / "log.html"
     REPORTS_NYC = REPORTS / "nyc"
+    REPORTS_NYC_HTML = REPORTS_NYC / "index.html"
     REPORTS_NYC_LCOV = REPORTS_NYC / "lcov.info"
     MYPY_CACHE = BUILD / ".mypy_cache"
+    SPELLING = BUILD / "spelling"
 
 
 class L:
@@ -496,6 +520,31 @@ class U:
 
         return fail_count
 
+    def check_one_spell(html: Path, findings: Path):
+        """Check a single document for misspelled words."""
+        proc = subprocess.Popen(
+            [
+                "hunspell",
+                "-d=en-GB,en_US",
+                "-p",
+                P.DOCS_DICTIONARY,
+                "-l",
+                "-L",
+                "-H",
+                str(html),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        stdout, stderr = proc.communicate()
+        out_text = "\n".join([stdout.decode("utf-8"), stderr.decode("utf-8")]).strip()
+        out_text = "\n".join(sorted(set(out_text.splitlines())))
+        findings.write_text(out_text, encoding="utf-8")
+        if out_text.strip():
+            print("...", html)
+            print(out_text)
+            return False
+
 
 def task_setup():
     """Run setup commands."""
@@ -539,6 +588,17 @@ def task_setup():
         )
 
 
+def task_env():
+    """Keep environment descriptions up-to-date."""
+    for env_dest, env_src in P.ENV_INHERIT.items():
+        yield dict(
+            name=f"conda:{env_dest.name}",
+            targets=[env_dest],
+            file_dep=[*env_src],
+            actions=[(U.update_env_fragments, [env_dest, env_src])],
+        )
+
+
 def task_watch():
     """Watch files and rebuild."""
     yield dict(
@@ -555,47 +615,6 @@ def task_docs():
         file_dep=[*P.DOCS_PY, *L.ALL_MD, *B.HISTORY, B.WHEEL, B.LITE_SHASUMS],
         actions=[["sphinx-build", "-b", "html", "docs", "build/docs"]],
         targets=[B.DOCS_BUILDINFO],
-    )
-
-
-@doit.create_after("docs")
-def task_check():
-    """Check the docs."""
-    all_html = [
-        p
-        for p in sorted(B.DOCS.rglob("*.html"))
-        if "_static" not in str(p.relative_to(B.DOCS))
-    ]
-
-    all_spell = [*all_html]
-
-    for example in P.EXAMPLES.glob("*.ipynb"):
-        out_html = B.EXAMPLE_HTML / f"{example.name}.html"
-        all_spell += [out_html]
-        yield dict(
-            name=f"nbconvert:{example.name}",
-            actions=[
-                (doit.tools.create_folder, [B.EXAMPLE_HTML]),
-                ["jupyter", "nbconvert", "--to=html", "--output", out_html, example],
-                (U.rewrite_links, [out_html]),
-            ],
-            file_dep=[example],
-            targets=[out_html],
-        )
-
-    yield dict(
-        name="links",
-        file_dep=[B.DOCS_BUILDINFO, *all_html],
-        actions=[
-            [
-                "pytest-check-links",
-                "-vv",
-                "--check-anchors",
-                "--check-links-ignore",
-                "http.*",
-                *all_html,
-            ]
-        ],
     )
 
 
@@ -776,7 +795,6 @@ def task_coverage():
                 "coverage",
                 "html",
                 "--show-contexts",
-                "--skip-covered",
                 "--skip-empty",
                 f"--data-file={B.COVERAGE_PY}",
                 f"--directory={B.HTMLCOV_HTML.parent}",
@@ -793,7 +811,7 @@ def task_coverage():
                 f"--report-dir={B.REPORTS_NYC}",
             ]
         ],
-        targets=[B.REPORTS_NYC / "index.html"],
+        targets=[B.REPORTS_NYC_HTML],
     )
 
 
@@ -989,7 +1007,7 @@ def task_build():
 
 
 def task_lite():
-    """Build the browser-based interactive demo."""
+    """Build the in-browser demo."""
     yield dict(
         name="build",
         file_dep=[
@@ -1008,6 +1026,33 @@ def task_lite():
             U.do(
                 ["jupyter", "lite", "doit", "--", "pre_archive:report:SHA256SUMS"],
                 cwd=P.EXAMPLES,
+            ),
+        ],
+    )
+
+
+def task_site():
+    """Build the static report website."""
+    yield dict(
+        name="build",
+        file_dep=[
+            B.ENV_PKG_JSON,
+            B.HTMLCOV_HTML,
+            B.PIP_FROZEN,
+            B.REPORTS_NYC_HTML,
+            B.ROBOT_LOG_HTML,
+            P.PAGES_LITE_CONFIG,
+            P.PAGES_LITE_JSON,
+        ],
+        targets=[B.PAGES_LITE_SHASUMS],
+        actions=[
+            U.do(
+                ["jupyter", "lite", "--debug", "build"],
+                cwd=P.PAGES_LITE,
+            ),
+            U.do(
+                ["jupyter", "lite", "doit", "--", "pre_archive:report:SHA256SUMS"],
+                cwd=P.PAGES_LITE,
             ),
         ],
     )
@@ -1052,3 +1097,57 @@ def task_serve():
         file_dep=[B.ENV_PKG_JSON, B.PIP_FROZEN],
         actions=[doit.tools.PythonInteractiveAction(lab)],
     )
+
+
+@doit.create_after("docs")
+def task_check():
+    """Check the built documentation."""
+    all_html = [
+        p
+        for p in sorted(B.DOCS.rglob("*.html"))
+        if "_static" not in str(p.relative_to(B.DOCS))
+    ]
+
+    all_spell = [*all_html]
+
+    for example in P.EXAMPLES.glob("*.ipynb"):
+        out_html = B.EXAMPLE_HTML / f"{example.name}.html"
+        all_spell += [out_html]
+        yield dict(
+            name=f"nbconvert:{example.name}",
+            actions=[
+                (doit.tools.create_folder, [B.EXAMPLE_HTML]),
+                ["jupyter", "nbconvert", "--to=html", "--output", out_html, example],
+                (U.rewrite_links, [out_html]),
+            ],
+            file_dep=[example],
+            targets=[out_html],
+        )
+
+    yield dict(
+        name="links",
+        file_dep=[B.DOCS_BUILDINFO, *all_html],
+        actions=[
+            [
+                "pytest-check-links",
+                "-vv",
+                "--check-anchors",
+                "--check-links-ignore",
+                "http.*",
+                *all_html,
+            ]
+        ],
+    )
+
+    for html_path in all_spell:
+        stem = html_path.relative_to(P.ROOT)
+        report = B.SPELLING / f"{stem}.txt"
+        yield dict(
+            name=f"spelling:{stem}",
+            actions=[
+                (doit.tools.create_folder, [report.parent]),
+                (U.check_one_spell, [html_path, report]),
+            ],
+            file_dep=[html_path, P.DOCS_DICTIONARY],
+            targets=[report],
+        )

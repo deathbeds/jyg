@@ -3,7 +3,7 @@ channels:
   - nodefaults
 
 dependencies:
-  - python >=3.11,<3.12
+  # a more precise python pin is added in CI
   ### environment-base.yml ###
   - doit-with-toml
   - jupyterlab >=3.5.2,<4
@@ -18,38 +18,6 @@ dependencies:
   - flit >=3.7.1
   - twine
   ### environment-build.yml ###
-  ### environment-lint.yml ###
-  # formatters
-  - black
-  - docformatter
-  - isort
-  - pydocstyle
-  - pyproject-fmt
-  - robotframework-tidy >=3.3
-  - ssort
-  # linters
-  - robotframework-robocop >=2.6
-  - pyflakes
-  - mypy
-  ### environment-lint.yml ###
-  ### environment-docs.yml ###
-  # docs
-  - docutils >=0.18
-  - pydata-sphinx-theme
-  - sphinx >=5.1,<6
-  - sphinx-autobuild
-  - sphinx-copybutton
-  - myst-nb
-  # check
-  - hunspell
-  - hunspell-en
-  - pytest-check-links
-  # lite cruft
-  - pkginfo
-  - python-libarchive-c
-  - pip:
-      - jupyterlite ==0.1.0b17
-  ### environment-docs.yml ###
   ### environment-test.yml ###
   # test
   - coverage

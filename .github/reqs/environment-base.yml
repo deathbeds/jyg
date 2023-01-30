@@ -1,0 +1,7 @@
+dependencies:
+  ### environment-base.yml ###
+  - doit-with-toml
+  - jupyterlab >=3.5.2,<4
+  - pip
+  - python >=3.8,<3.12
+  ### environment-base.yml ###

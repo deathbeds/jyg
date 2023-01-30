@@ -1,3 +1,5 @@
+name: jyg-docs
+
 channels:
   - conda-forge
   - nodefaults
@@ -18,20 +20,6 @@ dependencies:
   - flit >=3.7.1
   - twine
   ### environment-build.yml ###
-  ### environment-lint.yml ###
-  # formatters
-  - black
-  - docformatter
-  - isort
-  - pydocstyle
-  - pyproject-fmt
-  - robotframework-tidy >=3.3
-  - ssort
-  # linters
-  - robotframework-robocop >=2.6
-  - pyflakes
-  - mypy
-  ### environment-lint.yml ###
   ### environment-docs.yml ###
   # docs
   - docutils >=0.18
@@ -50,19 +38,3 @@ dependencies:
   - pip:
       - jupyterlite ==0.1.0b17
   ### environment-docs.yml ###
-  ### environment-test.yml ###
-  # test
-  - coverage
-  - hypothesis
-  - pytest-asyncio
-  - pytest-html
-  ### environment-test.yml ###
-  ### environment-robot.yml ###
-  - robotframework >=6
-  - robotframework-pabot
-  # browser
-  - firefox
-  - geckodriver
-  - robotframework-jupyterlibrary >=0.4.1
-  - lxml
-  ### environment-robot.yml ###

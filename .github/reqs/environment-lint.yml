@@ -3,7 +3,7 @@ channels:
   - nodefaults
 
 dependencies:
-  - python >=3.11,<3.12
+  - python >=3.10,<3.11
   ### environment-base.yml ###
   - doit-with-toml
   - jupyterlab >=3.5.2,<4
@@ -32,31 +32,6 @@ dependencies:
   - pyflakes
   - mypy
   ### environment-lint.yml ###
-  ### environment-docs.yml ###
-  # docs
-  - docutils >=0.18
-  - pydata-sphinx-theme
-  - sphinx >=5.1,<6
-  - sphinx-autobuild
-  - sphinx-copybutton
-  - myst-nb
-  # check
-  - hunspell
-  - hunspell-en
-  - pytest-check-links
-  # lite cruft
-  - pkginfo
-  - python-libarchive-c
-  - pip:
-      - jupyterlite ==0.1.0b17
-  ### environment-docs.yml ###
-  ### environment-test.yml ###
-  # test
-  - coverage
-  - hypothesis
-  - pytest-asyncio
-  - pytest-html
-  ### environment-test.yml ###
   ### environment-robot.yml ###
   - robotframework >=6
   - robotframework-pabot
