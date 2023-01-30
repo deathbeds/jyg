@@ -17,7 +17,9 @@
     "build:ext": "jupyter labextension build .",
     "build:ext:cov": "tsc -b js/tsconfig.cov.json && jlpm build:ext",
     "build:lib": "tsc -b js",
-    "build:schema": "json2ts -i src/jyg/schema/jyg-msg.v0.schema.json | prettier --stdin-filepath x.ts > js/_msgV0.ts",
+    "build:schema": "jlpm build:schema:msg && jlpm build:schema:boards",
+    "build:schema:boards": "json2ts -i schema/boards.json | prettier --stdin-filepath x.ts > js/_boards.ts",
+    "build:schema:msg": "json2ts -i src/jyg/schema/jyg-msg.v0.schema.json | prettier --stdin-filepath x.ts > js/_msgV0.ts",
     "watch": "run-p watch:lib watch:ext",
     "watch:ext": "jupyter labextension watch .",
     "watch:lib": "jlpm build:lib -w"
