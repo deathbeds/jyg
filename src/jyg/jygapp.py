@@ -65,10 +65,22 @@ class _APIApp(_BaseApp):
 
     @T.default("running_servers")
     def _default_running_servers(self) -> List[Dict[str, Any]]:
-        """Get running jupyter servers."""
-        from jupyter_server.serverapp import list_running_servers
+        """Get running jupyter servers.
 
-        return [*list_running_servers()]
+        Try to use the jupyter_server implementation if available.
+        """
+        running_servers: List[Dict[str, Any]] = []
+
+        try:
+            from jupyter_server.serverapp import list_running_servers
+
+            running_servers = [*list_running_servers()]
+        except:
+            from .utils import simple_list_running_servers
+
+            running_servers = [*simple_list_running_servers()]
+
+        return running_servers
 
     def jyg_url(self, *bits: str) -> str:
         """Get the jyg API URL."""

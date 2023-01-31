@@ -1,6 +1,32 @@
 """Utilities for jyg."""
 import json
-from typing import Any, Dict, List, Optional
+from pathlib import Path
+from typing import Any, Dict, Iterator, List, Optional
+
+
+def simple_list_running_servers() -> Iterator[Dict[str, Any]]:
+    """Iterate over the server info files of running Jupyter servers.
+
+    Given a runtime directory, find jpserver-* files in the security directory,
+    and yield dicts of their information, each one pertaining to a currently
+    running Jupyter server instance.
+
+    Adapted from:
+
+    https://github.com/jupyter-server/jupyter_server/blob/v2.1.0/jupyter_server/serverapp.py#L2922
+    """
+    from jupyter_core.paths import jupyter_runtime_dir
+
+    runtime_dir = Path(jupyter_runtime_dir())
+
+    for info_path in runtime_dir.glob("jp-server-*.json"):
+        try:
+            with info_path.open() as fd:
+                info = json.load(fd)
+        except Exception:
+            continue
+        if "pid" in info:
+            yield info
 
 
 def parse_command_args(argv: List[str]) -> Dict[str, Any]:
