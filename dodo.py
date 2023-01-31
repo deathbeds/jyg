@@ -17,8 +17,8 @@ class C:
 
     NAME = "jyg"
     NPM_NAME = f"@deathbeds/{NAME}"
-    OLD_VERSION = "0.0.0"
-    VERSION = "0.1.0"
+    OLD_VERSION = "0.1.0"
+    VERSION = "0.1.1"
     PACKAGE_JSON = "package.json"
     PYPROJECT_TOML = "pyproject.toml"
     PLATFORM = platform.system()

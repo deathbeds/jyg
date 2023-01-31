@@ -127,6 +127,12 @@ jupyter server extension list
 >     jyg x.x.x OK
 > ```
 
+If not present, you might be able to re-enable it with:
+
+```bash
+jupyter server extension enable --sys-prefix --py jyg
+```
+
 ```bash
 jupyter labextension list
 ```
