@@ -7,4 +7,5 @@ A number of pieces of `jyg` use [JSON Schema][json-schema].
 ```{toctree}
 ./message
 ./board
+./window-proxy
 ```

@@ -6,10 +6,12 @@
   "description": "Lightweight Command Boards",
   "type": "object",
   "properties": {
-    "enabled": {
-      "description": "Show Command Boards",
-      "type": "boolean",
-      "default": true
+    "launch_area": {
+      "title": "Launch Area",
+      "type": "string",
+      "description": "Open Command Boards in an area of the shell, or as a popup (requires accepting pop-ups)",
+      "enum": ["main", "left", "right", "popup"],
+      "default": "right"
     },
     "boards": {
       "type": "object",
@@ -33,6 +35,10 @@
         "title": {
           "description": "The human-readable to show in Command Board launchers",
           "type": "string"
+        },
+        "rank": {
+          "description": "Relative position of the board in its Category",
+          "type": "number"
         },
         "category": {
           "description": "The category of Launcher items and Command Palette entries",

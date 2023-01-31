@@ -43,6 +43,7 @@ class P:
     LICENSE = ROOT / "LICENSE"
     DOCS = ROOT / "docs"
     CI = ROOT / ".github"
+    SCHEMA = ROOT / "schema"
     YARNRC = ROOT / ".yarnrc"
     YARN_LOCK = ROOT / "yarn.lock"
     JS = ROOT / "js"
@@ -64,6 +65,8 @@ class P:
     PACKAGE_JSON = ROOT / C.PACKAGE_JSON
     ALL_PACKAGE_JSONS = [PACKAGE_JSON]
     MSG_SCHEMA_JSON = PY_SRC / "schema/jyg-msg.v0.schema.json"
+    BOARD_SCHEMA_JSON = SCHEMA / "boards.json"
+    PROXY_SCHEMA_JSON = SCHEMA / "window-proxy.json"
     SCRIPTS = ROOT / "scripts"
     PY_SCRIPTS = [*SCRIPTS.glob("*.py")]
     SCRIPT_SCHEMA_TO_PY = SCRIPTS / "schema2typeddict.py"
@@ -145,6 +148,8 @@ class B:
     PAGES_LITE = BUILD / "pages-lite"
     PAGES_LITE_SHASUMS = PAGES_LITE / "SHA256SUMS"
     EXAMPLE_HTML = BUILD / "examples"
+    BOARD_SCHEMA_TS = P.JS / "_boards.ts"
+    PROXY_SCHEMA_TS = P.JS / "_windowProxy.ts"
     MSG_SCHEMA_PY = P.PY_SRC / "schema/msg_v0.py"
     MSG_SCHEMA_TS = P.JS / "_msgV0.ts"
     COVERAGE = BUILD / "coverage"
@@ -167,11 +172,14 @@ class L:
     ALL_DOCS_MD = [*P.DOCS.rglob("*.md")]
     ALL_PY_SRC = [*P.PY_SRC.rglob("*.py")]
     ALL_BLACK = [P.DODO, *ALL_PY_SRC, *P.DOCS_PY, *P.PY_SCRIPTS]
-    ALL_CSS = [*P.DOCS_STATIC.rglob("*.css"), *P.JS.glob("*/style/**/*.css")]
+    ALL_SRC_CSS = [*(P.ROOT / "style").rglob("*.css")]
+    ALL_STYLE_ASSETS = [*P.JS.glob("style/**/*")]
+    ALL_CSS = [*P.DOCS_STATIC.rglob("*.css"), *ALL_SRC_CSS]
     ALL_JSON = [
         *P.ROOT.glob(".json"),
         *P.JS.glob("*/js/**/*.json"),
         P.MSG_SCHEMA_JSON,
+        *P.ATEST_FIXTURES.rglob("*.jupyterlab-settings"),
     ]
     ALL_MD = [
         *P.ROOT.glob("*.md"),
@@ -951,10 +959,13 @@ def task_build():
         yield dict(
             name="schema:json:ts",
             actions=[["jlpm", "build:schema"]],
-            file_dep=[P.MSG_SCHEMA_JSON, B.YARN_INTEGRITY],
-            targets=[
-                B.MSG_SCHEMA_TS,
+            file_dep=[
+                P.MSG_SCHEMA_JSON,
+                P.BOARD_SCHEMA_JSON,
+                P.PROXY_SCHEMA_JSON,
+                B.YARN_INTEGRITY,
             ],
+            targets=[B.MSG_SCHEMA_TS, B.BOARD_SCHEMA_TS, B.PROXY_SCHEMA_TS],
         )
 
         yield dict(
@@ -990,7 +1001,13 @@ def task_build():
 
     uptodate = [doit.tools.config_changed(dict(WITH_JS_COV=E.WITH_JS_COV))]
 
-    ext_dep = [P.PACKAGE_JSON, P.EXT_JS_WEBPACK, B.YARN_INTEGRITY]
+    ext_dep = [
+        P.PACKAGE_JSON,
+        P.EXT_JS_WEBPACK,
+        B.YARN_INTEGRITY,
+        *L.ALL_CSS,
+        *L.ALL_STYLE_ASSETS,
+    ]
 
     if E.WITH_JS_COV:
         ext_task = "build:ext:cov"
@@ -1001,7 +1018,13 @@ def task_build():
             uptodate=uptodate,
             name="js",
             actions=[["jlpm", "build:lib"]],
-            file_dep=[*L.ALL_TS, B.YARN_INTEGRITY],
+            file_dep=[
+                *L.ALL_TS,
+                B.YARN_INTEGRITY,
+                B.MSG_SCHEMA_TS,
+                B.BOARD_SCHEMA_TS,
+                B.PROXY_SCHEMA_TS,
+            ],
             targets=[B.JS_META_TSBUILDINFO],
         )
 

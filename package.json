@@ -13,16 +13,25 @@
     "url": "https://github.com/deathbeds/jyg/issues"
   },
   "main": "lib/index.js",
+  "files": [
+    "{lib,schema,style,src}/**/*.{ts,tsx,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,css}"
+  ],
   "scripts": {
     "build:ext": "jupyter labextension build .",
     "build:ext:cov": "tsc -b js/tsconfig.cov.json && jlpm build:ext",
     "build:lib": "tsc -b js",
-    "build:schema": "json2ts -i src/jyg/schema/jyg-msg.v0.schema.json | prettier --stdin-filepath x.ts > js/_msgV0.ts",
+    "build:schema": "jlpm build:schema:msg && jlpm build:schema:boards && jlpm build:schema:window-proxy",
+    "build:schema:boards": "json2ts -i schema/boards.json | prettier --stdin-filepath x.ts > js/_boards.ts",
+    "build:schema:msg": "json2ts -i src/jyg/schema/jyg-msg.v0.schema.json | prettier --stdin-filepath x.ts > js/_msgV0.ts",
+    "build:schema:window-proxy": "json2ts -i schema/window-proxy.json | prettier --stdin-filepath x.ts > js/_windowProxy.ts",
     "watch": "run-p watch:lib watch:ext",
     "watch:ext": "jupyter labextension watch .",
     "watch:lib": "jlpm build:lib -w"
   },
   "types": "lib/index.d.ts",
+  "resolutions": {
+    "loader-utils": "^2.0.0"
+  },
   "dependencies": {
     "@jupyterlab/application": "^3.1.0",
     "@jupyterlab/launcher": "^3.1.0",
@@ -85,6 +94,14 @@
   },
   "prettier": {
     "jsonRecursiveSort": true,
+    "overrides": [
+      {
+        "files": "*.jupyterlab-settings",
+        "options": {
+          "parser": "json"
+        }
+      }
+    ],
     "printWidth": 88,
     "proseWrap": "always",
     "singleQuote": true

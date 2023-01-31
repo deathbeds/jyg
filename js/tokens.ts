@@ -5,6 +5,7 @@ import * as _PACKAGE from '../package.json';
 
 export const PACKAGE = _PACKAGE;
 
+import * as B from './_boards';
 import * as M from './_msgV0';
 
 export const NS = PACKAGE.name;
@@ -22,7 +23,7 @@ export const IWindowProxyCommandSource = new Token<IWindowProxyCommandSource>(
 export const IBoardManager = new Token<IBoardManager>(`${NS}:IBoardManager`);
 
 export interface IWindowProxyCommandSource {
-  addSource(source: WindowProxy | Worker): void;
+  addSource(source: WindowProxy | Worker, origin: string): void;
   removeSource(source: WindowProxy | Worker): void;
 }
 
@@ -36,7 +37,7 @@ export interface IBoardManager {
   openBoard(id: string): Promise<void>;
   boardsChanged: ISignal<IBoardManager, void>;
   boardIds: string[];
-  getBoard(id: string): IBoard | null;
+  getBoard(id: string): B.CommandBoard | null;
 }
 
 export interface IRemoteCommandSource {
@@ -66,14 +67,13 @@ export const EMOJI = '📺';
 
 export const CommandIds = {
   openBoard: 'jyg:open-board',
+  closeAllBoards: 'jyg:close-all-boards',
 };
 
-// TODO: schema
-export interface IBoard {
-  title: string;
-  template: string;
-  category?: string;
-  description?: string;
-  icon?: string;
-  rank?: number;
-}
+export const CSS = {
+  frame: 'jp-Jyg-Frame',
+  switchArea: 'jp-Jyg-SwitchArea',
+  // lab
+  htmlSelect: 'jp-HTMLSelect',
+  defaultStyle: 'jp-DefaultStyle',
+};

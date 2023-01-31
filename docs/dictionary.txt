@@ -2,6 +2,7 @@
 additionalProperties
 anyOf
 args
+backend
 Changelog
 className
 CLI
@@ -32,7 +33,9 @@ PyData
 pypi
 PyPI
 README
+ReadTheDocs
 Renderers
+Roadmap
 rtd
 scrollable
 spacebar

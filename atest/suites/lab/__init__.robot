@@ -34,7 +34,6 @@ ${BOARD_TEMPLATE}       <button data-command-id="${CMD_ID_LICENSES}">Show Licens
 *** Keywords ***
 Set Up Lab Suite
     [Documentation]    Ensure a testable server is running
-    [Timeout]    40s
     ${port} =    Get Unused Port
     ${base_url} =    Set Variable    /@rf/
     ${token} =    UUID4

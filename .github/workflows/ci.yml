@@ -14,7 +14,7 @@ env:
   CI: '1'
 
   # our stuff
-  ROBOT_RETRIES: '1'
+  ROBOT_RETRIES: '2'
   CACHE_EPOCH: '1'
   DOIT_N_BUILD: '-n4'
   PABOT_PROCESSES: '3'
@@ -94,7 +94,7 @@ jobs:
         run: doit list --all --status
 
       - name: build
-        run: doit ${{ matrix.DOIT_N_BUILD }} dist || doit dist
+        run: doit ${{ env.DOIT_N_BUILD }} dist || doit dist
 
       - name: status
         run: doit list --all --status | sort

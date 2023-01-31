@@ -1,0 +1,15 @@
+.jp-Jyg-Frame {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 100px !important;
+  width: 100px;
+  background-color: var(--jp-layout-color2);
+}
+
+.jp-Jyg-SwitchArea {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  margin: 0 0.5em;
+}

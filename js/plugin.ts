@@ -1,11 +1,14 @@
 import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
+import { ICommandPalette } from '@jupyterlab/apputils';
 import { ILauncher } from '@jupyterlab/launcher';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { LabIcon } from '@jupyterlab/ui-components';
 
 import '../style/index.css';
 
+import * as B from './_boards';
 import { BoardManager } from './boards';
-import { ICONS } from './icons';
+import * as I from './icons';
 import { RemoteCommandManager } from './manager';
 import {
   IRemoteCommandManager,
@@ -14,7 +17,6 @@ import {
   CommandIds,
   IWindowProxyCommandSource,
   IBoardManager,
-  IBoard,
 } from './tokens';
 
 const corePlugin: JupyterFrontEndPlugin<IRemoteCommandManager> = {
@@ -75,29 +77,51 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
   id: `${NS}:boards`,
   autoStart: true,
   requires: [ISettingRegistry, IRemoteCommandManager, IWindowProxyCommandSource],
-  optional: [ILauncher],
+  optional: [ILauncher, ICommandPalette],
   provides: IBoardManager,
   activate: async (
     app: JupyterFrontEnd,
     settings: ISettingRegistry,
     remoteCommands: IRemoteCommandManager,
     windowProxy: IWindowProxyCommandSource,
-    launcher?: ILauncher
+    launcher?: ILauncher,
+    palette?: ICommandPalette
   ) => {
-    const boards = new BoardManager({ windowProxy, remoteCommands });
+    const { commands, shell } = app;
 
-    const { commands } = app;
+    const boards = new BoardManager({ windowProxy, remoteCommands, shell });
 
     commands.addCommand(CommandIds.openBoard, {
-      icon: ICONS.logo,
+      icon: (args?: any): LabIcon => {
+        let icon = I.logo;
+        const { id } = args;
+        if (id) {
+          const board = boards.getBoard(id);
+          icon = boards.getBoardIcon(board);
+        }
+        return icon;
+      },
       label: (args?: any): string => {
         const { id } = args;
         if (id) {
-          return `Open Command Board ${boards.getBoard(id)?.title || id}`;
+          return `${boards.getBoard(id)?.title || id} Command Board`;
         }
         return 'Unknown Command Board';
       },
       execute: (args?: any) => boards.openBoard(args.id),
+    });
+
+    commands.addCommand(CommandIds.closeAllBoards, {
+      label: 'Close All Command Boards',
+      execute: () => boards.closeAllBoards(),
+      icon: I.danger,
+    });
+
+    const defaultCategory = 'Command Boards';
+
+    palette?.addItem({
+      command: CommandIds.closeAllBoards,
+      category: defaultCategory,
     });
 
     settings
@@ -106,13 +130,22 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
         boards.settings = settings;
         const hasLauncher: string[] = [];
 
-        function makeLauncherItem(boardId: string, board: IBoard) {
+        function makeLauncherItem(boardId: string, board: B.CommandBoard) {
+          const category = board.category || defaultCategory;
+          const args = { id: boardId };
+          const rank = board.rank == null ? 100 : board.rank;
           launcher?.add({
             command: CommandIds.openBoard,
             metadata: board as any,
-            args: { id: boardId },
-            category: board.category || 'Other',
-            rank: board.rank == null ? 100 : board.rank,
+            args,
+            category,
+            rank,
+          });
+          palette?.addItem({
+            command: CommandIds.openBoard,
+            category,
+            args,
+            rank,
           });
           hasLauncher.push(boardId);
         }

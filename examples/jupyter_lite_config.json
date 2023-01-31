@@ -1,6 +1,6 @@
 {
   "LiteBuildConfig": {
-    "contents": ["../docs/boards"],
+    "contents": [".", "../docs/boards"],
     "output_dir": "../build/lite"
 
   }

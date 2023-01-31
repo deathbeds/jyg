@@ -5,10 +5,12 @@ channels:
 dependencies:
   # a more precise python pin is added in CI
   ### environment-base.yml ###
+  - argcomplete
   - doit-with-toml
   - jupyterlab >=3.5.2,<4
   - pip
   - python >=3.8,<3.12
+  - traitlets >=5.8
   ### environment-base.yml ###
   ### environment-build.yml ###
   # runtimes

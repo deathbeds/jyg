@@ -2,6 +2,8 @@
 
 > run Jupyter browser client commands from a CLI, REST API, or other browser windows
 
+See the full [documentation on ReadTheDocs](https://jyg.rtfd.io).
+
 ## Installation
 
 > Note: after installing the browser and server extension, you'll need to **restart**
@@ -58,6 +60,7 @@ Before running any of the above, please ensure you have [installed](#installatio
     </button>
     ```
 - Click the _Launcher Item_ for the board
+  - Or use the _Command Palette_
 - Click the elements in the board
 
 ### CLI
@@ -147,3 +150,25 @@ jupyter server list
 To run or list commands, the browser must be running the client. Also look at the
 _Browser Console_ (usually shown with <kbd>f12</kbd>) for any explicit errors or
 warnings.
+
+## Frequently Asked Questions
+
+### Does `jyg` work with Jupyter `notebook <7`?
+
+No. And it won't.
+
+### Does `jyg` work with Jupyter `notebook >=7`?
+
+Not yet.
+
+### Does `jyg` work with another backend than `jupyter_server`?
+
+No. However, the API is relatively straightforward.
+
+### Can `$MY_APPLICATION` use `jyg` to drive Jupyter clients?
+
+Probably not. `jyg` only provides a way to operate its host application in co-deployed
+`<iframe>` (Command Boards).
+
+The API is available, however, to create custom extensions which would allow a web page
+that _already_ had access to the Jupyter application to register use `postMessage`.
