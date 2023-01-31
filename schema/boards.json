@@ -42,6 +42,7 @@
         "$ref": "#/definitions/board",
         "description": "new boards"
       },
+      "default": {},
       "description": "create Command Boards",
       "title": "Defined Boards",
       "type": "object"
