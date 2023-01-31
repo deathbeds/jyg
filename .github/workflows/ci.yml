@@ -106,29 +106,51 @@ jobs:
           name: jyg-dist-${{ github.run_number }}
           path: ./dist
 
+  smoke:
+    runs-on: ${{ matrix.os }}-latest
+    needs: [build]
+    name: ${{ matrix.os }} ${{ matrix.python-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu', 'macos', 'windows']
+        python-version: ['3.8', '3.11']
+    steps:
+      - name: download (dist)
+        uses: actions/download-artifact@v3
+        with:
+          name: jyg-dist-${{ github.run_number }}
+          path: ./dist
+
+      - name: setup (python)
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
       - name: install dist
         run: |
           pip install -vv dist/*.whl
           pip check
-
-      - name: list dist extensions
-        run: |
-          jupyter labextension list 1>labextensions.txt 2>&1 || echo uhoh
-          jupyter server extension list 1>server_extensions.txt 2>&1 || echo uhoh
-          jupyter serverextension list |>serverextensions.txt 2>&1 || echo uhoh
-          cat *extensions.txt
-
-      - name: check extensions
-        run: |
-          grep -iE "@deathbeds/jyg.*OK" labextensions.txt
-          grep -iE "jyg.*OK" server_extensions.txt
-          grep -iE "jyg.*OK" serverextensions.txt
 
       - name: cli smoke test
         run: |
           jyg --help
           jupyter-jyg --help
           python -m jyg --help
+
+      - name: list dist extensions
+        run: |
+          jupyter labextension list 1>labextensions.txt 2>&1
+          jupyter server extension list 1>server_extensions.txt 2>&1
+          jupyter serverextension list 1>serverextensions.txt 2>&1
+
+      - name: check extensions
+        shell: bash -l {0}
+        run: |
+          grep -iE "@deathbeds/jyg.*OK" labextensions.txt
+          grep -iE "jyg.*OK" server_extensions.txt
+          grep -iE "jyg.*OK" serverextensions.txt
 
   lint:
     runs-on: ${{ matrix.os }}-latest
