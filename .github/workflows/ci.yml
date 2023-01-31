@@ -7,6 +7,11 @@ on:
   pull_request:
     branches:
       - '*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   PYTHONUNBUFFERED: '1'
@@ -109,7 +114,7 @@ jobs:
   smoke:
     runs-on: ${{ matrix.os }}-latest
     needs: [build]
-    name: ${{ matrix.os }} ${{ matrix.python-version }}
+    name: smoke ${{ matrix.os }} ${{ matrix.python-version }}
     strategy:
       fail-fast: false
       matrix:
@@ -139,8 +144,15 @@ jobs:
           jupyter-jyg --help
           python -m jyg --help
 
+      - name: install app
+        run: |
+          pip install jupyterlab
+
       - name: list dist extensions
         run: |
+          jupyter labextension list || echo uhoh
+          jupyter server extension list || echo uhoh
+          jupyter serverextension list
           jupyter labextension list 1>labextensions.txt 2>&1
           jupyter server extension list 1>server_extensions.txt 2>&1
           jupyter serverextension list 1>serverextensions.txt 2>&1
@@ -224,7 +236,7 @@ jobs:
 
   test:
     needs: [build]
-    name: ${{ matrix.os }} ${{ matrix.python-version }}
+    name: test ${{ matrix.os }} ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
