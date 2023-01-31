@@ -140,7 +140,7 @@ jupyter labextension list
 > _You should see something like:_
 >
 > ```
-> @deathbeds/jyg v0.1.0 enabled OK
+> @deathbeds/jyg vx.x.x enabled OK
 > ```
 
 ### The server is running
