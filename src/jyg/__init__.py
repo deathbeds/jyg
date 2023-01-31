@@ -1,4 +1,4 @@
-"""Main entrypoint for jyg."""
+"""run Jupyter browser client commands from a CLI, REST API, or browser windows."""
 
 from typing import Dict, List
 
