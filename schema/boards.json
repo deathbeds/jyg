@@ -6,11 +6,6 @@
   "description": "Lightweight Command Boards",
   "type": "object",
   "properties": {
-    "enabled": {
-      "description": "Enable Command Boards",
-      "type": "boolean",
-      "default": true
-    },
     "launch_area": {
       "title": "Launch Area",
       "type": "string",

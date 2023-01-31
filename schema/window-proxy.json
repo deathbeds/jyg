@@ -20,7 +20,7 @@
       "default": []
     },
     "allow_same_origin": {
-      "description": "Allow listing and executing commmands from this app's base URL",
+      "description": "Allow listing and executing commands from this app's base URL",
       "type": "boolean",
       "default": true
     }

@@ -18,7 +18,7 @@ export interface RemoteCommandsWindow {
    */
   allowed_origins?: string[];
   /**
-   * Allow listing and executing commmands from this app's base URL
+   * Allow listing and executing commands from this app's base URL
    */
   allow_same_origin?: boolean;
   [k: string]: unknown;

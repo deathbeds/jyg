@@ -14,10 +14,6 @@ export type LaunchArea = 'main' | 'left' | 'right' | 'popup';
  * Lightweight Command Boards
  */
 export interface CommandBoards {
-  /**
-   * Enable Command Boards
-   */
-  enabled?: boolean;
   launch_area?: LaunchArea;
   boards?: DefinedBoards;
   [k: string]: unknown;
