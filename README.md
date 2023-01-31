@@ -1,6 +1,25 @@
 # `jyg`
 
+|            demo             |            docs             |                                                            install                                                             |                build                 |
+| :-------------------------: | :-------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :----------------------------------: |
+| [![binder-badge][]][binder] | [![docs][docs-badge]][docs] | [![install from pypi][pypi-badge]][pypi] [![install from conda-forge][conda-badge]][conda] [![reuse from npm][npm-badge]][npm] | [![build][workflow-badge]][workflow] |
+
 > run Jupyter browser client commands from a CLI, REST API, or other browser windows
+
+[binder-badge]: https://mybinder.org/badge_logo.svg
+[binder]: https://mybinder.org/v2/gh/deathbeds/jyg/HEAD?urlpath=lab
+[docs-badge]: https://readthedocs.org/projects/jyg/badge/?version=latest
+[docs]: https://jyg.rtfd.io
+[conda-badge]: https://img.shields.io/conda/vn/conda-forge/jyg
+[conda]: https://anaconda.org/conda-forge/jyg
+[pypi-badge]: https://img.shields.io/pypi/v/jyg
+[pypi]: https://pypi.org/project/jyg
+[npm]: https://npmjs.com/package/@deathbeds/jyg
+[npm-badge]: https://img.shields.io/npm/v/@deathbeds/jyg
+[workflow-badge]:
+  https://github.com/deathbeds/jyg/actions/workflows/ci.yml/badge.svg?branch=main
+[workflow]:
+  https://github.com/deathbeds/jyg/actions/workflows/ci.yml?query=branch%3Amain
 
 See the full [documentation on ReadTheDocs](https://jyg.rtfd.io).
 

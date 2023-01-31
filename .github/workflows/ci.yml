@@ -258,6 +258,7 @@ jobs:
             ROBOT_JP_SERVER_APP: notebook
           - python-version: '3.11'
             CI_ARTIFACT: 'wheel'
+            ROBOT_JP_SERVER_APP: jupyterlab
     env:
       TESTING_IN_CI: '1'
     steps:
@@ -308,13 +309,23 @@ jobs:
         shell: cmd /C CALL {0}
         run: doit test:pytest
 
+      - name: coverage (unix)
+        if: matrix.os != 'windows' and always()
+        shell: bash -l {0}
+        run: doit coverage
+
+      - name: coverage (windows)
+        if: matrix.os == 'windows' and always()
+        shell: cmd /C CALL {0}
+        run: doit coverage
+
       - uses: codecov/codecov-action@v3
         with:
           directory: ./build/reports/coverage-xml/
           verbose: true
           flags: back-end
 
-      - name: upload (atest)
+      - name: upload (reports)
         if: always()
         uses: actions/upload-artifact@v3
         with:

@@ -12,7 +12,7 @@ Resource            ../../resources/Commands.resource
 Suite Setup         Set Up Lab Suite
 Suite Teardown      Tear Down Lab Suite
 
-Test Tags           app:lab    server:${jp_app}
+Test Tags           app:lab    server:${jp_server_app}
 
 
 *** Variables ***
