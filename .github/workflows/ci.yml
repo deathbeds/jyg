@@ -123,6 +123,7 @@ jobs:
     needs: [build]
     name: smoke (${{ matrix.os }} ${{ matrix.python-version }})
     strategy:
+      max-parallel: 2
       fail-fast: false
       matrix:
         os: ['ubuntu', 'macos', 'windows']
