@@ -106,6 +106,30 @@ jobs:
           name: jyg-dist-${{ github.run_number }}
           path: ./dist
 
+      - name: install dist
+        run: |
+          pip install -vv dist/*.whl
+          pip check
+
+      - name: list dist extensions
+        run: |
+          jupyter labextension list 1>labextensions.txt 2>&1 || echo uhoh
+          jupyter server extension list 1>server_extensions.txt 2>&1 || echo uhoh
+          jupyter serverextension list |>serverextensions.txt 2>&1 || echo uhoh
+          cat *extensions.txt
+
+      - name: check extensions
+        run: |
+          grep -iE "@deathbeds/jyg.*OK" labextensions.txt
+          grep -iE "jyg.*OK" server_extensions.txt
+          grep -iE "jyg.*OK" serverextensions.txt
+
+      - name: cli smoke test
+        run: |
+          jyg --help
+          jupyter-jyg --help
+          python -m jyg --help
+
   lint:
     runs-on: ${{ matrix.os }}-latest
     strategy:
