@@ -1,4 +1,5 @@
 import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
+import { ICommandPalette } from '@jupyterlab/apputils';
 import { ILauncher } from '@jupyterlab/launcher';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -76,14 +77,15 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
   id: `${NS}:boards`,
   autoStart: true,
   requires: [ISettingRegistry, IRemoteCommandManager, IWindowProxyCommandSource],
-  optional: [ILauncher],
+  optional: [ILauncher, ICommandPalette],
   provides: IBoardManager,
   activate: async (
     app: JupyterFrontEnd,
     settings: ISettingRegistry,
     remoteCommands: IRemoteCommandManager,
     windowProxy: IWindowProxyCommandSource,
-    launcher?: ILauncher
+    launcher?: ILauncher,
+    palette?: ICommandPalette
   ) => {
     const { commands, shell } = app;
 
@@ -116,12 +118,21 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
         const hasLauncher: string[] = [];
 
         function makeLauncherItem(boardId: string, board: B.CommandBoard) {
+          const category = board.category || 'Command Boards';
+          const args = { id: boardId };
+          const rank = board.rank == null ? 100 : board.rank;
           launcher?.add({
             command: CommandIds.openBoard,
             metadata: board as any,
-            args: { id: boardId },
-            category: board.category || 'Other',
-            rank: board.rank == null ? 100 : board.rank,
+            args,
+            category,
+            rank,
+          });
+          palette?.addItem({
+            command: CommandIds.openBoard,
+            category,
+            args,
+            rank,
           });
           hasLauncher.push(boardId);
         }
