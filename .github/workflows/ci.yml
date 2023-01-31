@@ -310,12 +310,12 @@ jobs:
         run: doit test:pytest
 
       - name: coverage (unix)
-        if: matrix.os != 'windows' and always()
+        if: matrix.os != 'windows' && always()
         shell: bash -l {0}
         run: doit coverage
 
       - name: coverage (windows)
-        if: matrix.os == 'windows' and always()
+        if: matrix.os == 'windows' && always()
         shell: cmd /C CALL {0}
         run: doit coverage
 
