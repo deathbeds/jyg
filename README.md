@@ -113,6 +113,7 @@ If various pieces do not appear to be working, try some of the steps below.
 
 ```bash
 jupyter server extension list
+jupyter serverextension list
 ```
 
 > _You should see some output that includes:_
@@ -127,6 +128,7 @@ If not present, you might be able to re-enable it with:
 
 ```bash
 jupyter server extension enable --sys-prefix --py jyg
+jupyter serverextension enable --sys-prefix --py jyg.serverextension
 ```
 
 ```bash
@@ -139,15 +141,16 @@ jupyter labextension list
 > @deathbeds/jyg vx.x.x enabled OK
 > ```
 
-### The server is running
+### Verify the server is running
 
 Make sure the server is running.
 
 ```bash
 jupyter server list
+jupyter notebook list
 ```
 
-### The application is running
+### Verify the browser application is running
 
 To run or list commands, the browser must be running the client. Also look at the
 _Browser Console_ (usually shown with <kbd>f12</kbd>) for any explicit errors or
@@ -155,22 +158,33 @@ warnings.
 
 ## Frequently Asked Questions
 
-### Does `jyg` work with Jupyter `notebook <7`?
+### Does `jyg` work with Jupyter `notebook<7`?
 
-No. And it won't.
+**Sort of.** `jyg` can list and run commands in JupyterLab-derived apps running as an
+extension to the `notebook` server... but only when running under `jupyter_server<2`.
 
-### Does `jyg` work with Jupyter `notebook >=7`?
+It cannot (and will not) integrate with the Bootstrap/jQuery notebook UI, as there is
+consistent design pattern for commands.
 
-Not yet.
+### Does `jyg` work with Jupyter `notebook>=7`?
+
+**Not yet.** But it will probably work pretty soon after a release.
 
 ### Does `jyg` work with another backend than `jupyter_server`?
 
-No. However, the API is relatively straightforward.
+**No.** Aside from the above about `notebook<7`. However, the API is extensively typed
+and tested, and could be implemented in another backend.
 
 ### Can `$MY_APPLICATION` use `jyg` to drive Jupyter clients?
 
-Probably not. `jyg` only provides a way to operate its host application in co-deployed
-`<iframe>` (Command Boards).
+**Probably not.** Out of the box. `jyg` only provides a way to operate its host
+application in co-deployed `<iframe>`s as _Command Boards_, and only runs the
+`postMessage` server when a board is actively running.
 
-The API is available, however, to create custom extensions which would allow a web page
-that _already_ had access to the Jupyter application to register use `postMessage`.
+The in-browser API is available, however, to create custom extensions which would allow
+a web page that _already_ had access to the Jupyter application to register use
+`postMessage`.
+
+If your application _already_ has control over the Jupyter application, you can likely
+use a handle to the `Application` instance, get access to the `IWindowProxy` plugin, and
+add the host window as a source.

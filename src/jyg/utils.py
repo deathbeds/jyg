@@ -1,13 +1,27 @@
 """Utilities for jyg."""
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
 
-def simple_list_running_servers() -> Iterator[Dict[str, Any]]:
-    """Iterate over the server info files of running Jupyter servers.
+def is_pid_killable(pid: int) -> bool:
+    """Abuse ``os.kill`` to check whether a process is running.
 
-    Given a runtime directory, find jpserver-* files in the security directory,
+    This can _still_ report a process is running if it has zombie
+    kernels, etc.
+    """
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
+def fallback_list_running_servers() -> Iterator[Dict[str, Any]]:
+    """Iterate over the server info files of running Jupyter/notebook servers.
+
+    Given a runtime directory, find (nb|jp)server-* files in the security directory,
     and yield dicts of their information, each one pertaining to a currently
     running Jupyter server instance.
 
@@ -19,13 +33,22 @@ def simple_list_running_servers() -> Iterator[Dict[str, Any]]:
 
     runtime_dir = Path(jupyter_runtime_dir())
 
-    for info_path in runtime_dir.glob("jp-server-*.json"):
+    # find info paths in time order order
+    info_paths = sorted(
+        [
+            *runtime_dir.glob("jpserver-*.json"),
+            *runtime_dir.glob("nbserver-*.json"),
+        ],
+        key=lambda s: s.stat().st_mtime,
+    )
+
+    for info_path in reversed(info_paths):
         try:
             with info_path.open() as fd:
                 info = json.load(fd)
         except Exception:
             continue
-        if "pid" in info:
+        if "pid" in info and is_pid_killable(info["pid"]):
             yield info
 
 
