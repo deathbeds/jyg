@@ -12,7 +12,7 @@ import * as BOARD_HTML from '../style/board.html';
 
 import * as B from './_boards';
 import * as M from './_msgV0';
-import { ICONS } from './icons';
+import * as I from './icons';
 import {
   IBoardManager,
   IRemoteCommandManager,
@@ -43,6 +43,7 @@ export class BoardManager implements IBoardManager {
   protected _icons = new Map<string, LabIcon>();
   protected _nextIcon = 0;
   protected _realUrl = new PromiseDelegate<string>();
+  protected _widgets: Widget[] = [];
 
   constructor(options: IBoardManagerOptions) {
     this._windowProxy = options.windowProxy;
@@ -194,11 +195,18 @@ export class BoardManager implements IBoardManager {
     content.title.icon = this.getBoardIcon(board);
     this.handleAreaChange(area, widget, board);
     this._shell.add(widget, area as string, addOptions);
+    this._widgets.push(widget);
     const newWindow = content.node.querySelector('iframe')?.contentWindow;
     if (!newWindow) {
       throw new Error('No window');
     }
     return newWindow;
+  }
+
+  closeAllBoards(): void {
+    for (const widget of this._widgets) {
+      widget.dispose();
+    }
   }
 
   getBoardIcon(board: B.CommandBoard | null): LabIcon {
@@ -215,7 +223,7 @@ export class BoardManager implements IBoardManager {
       }
       icon = this._icons.get(board.icon) || null;
     }
-    return icon || ICONS.logo;
+    return icon || I.logo;
   }
 
   handleAreaChange(area: B.LaunchArea, main: MainAreaWidget, board: B.CommandBoard) {
@@ -248,11 +256,11 @@ export class BoardManager implements IBoardManager {
       const favicon = newWindow.document.createElement('link');
       favicon.rel = 'shortcut icon';
       favicon.type = 'image/svg+xml';
-      favicon.href = this.svgToDataURI(board.icon || ICONS.logo.svgstr);
+      favicon.href = this.svgToDataURI(board.icon || I.logo.svgstr);
 
       newWindow.document.head.appendChild(favicon);
 
-      this._windowProxy.addSource(newWindow);
+      this._windowProxy.addSource(newWindow, window.location.origin);
 
       const onNodeClick = (evt: Event) => {
         const { currentTarget } = evt;

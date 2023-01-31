@@ -58,6 +58,7 @@ Before running any of the above, please ensure you have [installed](#installatio
     </button>
     ```
 - Click the _Launcher Item_ for the board
+  - Or use the _Command Palette_
 - Click the elements in the board
 
 ### CLI

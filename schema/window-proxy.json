@@ -17,15 +17,7 @@
       "items": {
         "type": "string"
       },
-      "default": ["*"]
-    },
-    "blocked_origins": {
-      "description": "Patterns for origins blocked from listing and executing commands",
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "default": ["*"]
+      "default": []
     },
     "allow_same_origin": {
       "description": "Allow listing and executing commmands from this app's base URL",

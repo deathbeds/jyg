@@ -21,5 +21,6 @@ cli
 api
 schema/index
 changelog
+roadmap
 contributing
 ```

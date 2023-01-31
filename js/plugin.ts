@@ -8,7 +8,7 @@ import '../style/index.css';
 
 import * as B from './_boards';
 import { BoardManager } from './boards';
-import { ICONS } from './icons';
+import * as I from './icons';
 import { RemoteCommandManager } from './manager';
 import {
   IRemoteCommandManager,
@@ -93,7 +93,7 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
 
     commands.addCommand(CommandIds.openBoard, {
       icon: (args?: any): LabIcon => {
-        let icon = ICONS.logo;
+        let icon = I.logo;
         const { id } = args;
         if (id) {
           const board = boards.getBoard(id);
@@ -111,6 +111,19 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
       execute: (args?: any) => boards.openBoard(args.id),
     });
 
+    commands.addCommand(CommandIds.closeAllBoards, {
+      label: 'Close All Command Boards',
+      execute: () => boards.closeAllBoards(),
+      icon: I.danger,
+    });
+
+    const defaultCategory = 'Command Boards';
+
+    palette?.addItem({
+      command: CommandIds.closeAllBoards,
+      category: defaultCategory,
+    });
+
     settings
       .load(boardPlugin.id)
       .then((settings) => {
@@ -118,7 +131,7 @@ const boardPlugin: JupyterFrontEndPlugin<IBoardManager> = {
         const hasLauncher: string[] = [];
 
         function makeLauncherItem(boardId: string, board: B.CommandBoard) {
-          const category = board.category || 'Command Boards';
+          const category = board.category || defaultCategory;
           const args = { id: boardId };
           const rank = board.rank == null ? 100 : board.rank;
           launcher?.add({

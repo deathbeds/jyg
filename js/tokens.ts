@@ -23,7 +23,7 @@ export const IWindowProxyCommandSource = new Token<IWindowProxyCommandSource>(
 export const IBoardManager = new Token<IBoardManager>(`${NS}:IBoardManager`);
 
 export interface IWindowProxyCommandSource {
-  addSource(source: WindowProxy | Worker): void;
+  addSource(source: WindowProxy | Worker, origin: string): void;
   removeSource(source: WindowProxy | Worker): void;
 }
 
@@ -67,6 +67,7 @@ export const EMOJI = '📺';
 
 export const CommandIds = {
   openBoard: 'jyg:open-board',
+  closeAllBoards: 'jyg:close-all-boards',
 };
 
 export const CSS = {

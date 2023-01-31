@@ -1,6 +1,7 @@
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 import * as M from '../_msgV0';
+import * as P from '../_windowProxy';
 import { IWindowProxyCommandSource, IRemoteCommandSource, EMOJI } from '../tokens';
 
 import { BaseCommandSource, IOptions as _IOptions } from './_base';
@@ -31,10 +32,6 @@ export class WindowProxyCommandSource
     this.onSettingsChanged();
   }
 
-  get enabled() {
-    return !!this._settings?.composite.enabled;
-  }
-
   onSettingsChanged(): void {
     if (this._settings?.composite.enabled && this._listening) {
       this.unlisten();
@@ -42,7 +39,7 @@ export class WindowProxyCommandSource
   }
 
   listen() {
-    if (this.enabled) {
+    if (this.composite.enabled) {
       window.addEventListener('message', this.onSourceMessage);
       this._listening = true;
     }
@@ -54,8 +51,8 @@ export class WindowProxyCommandSource
     this._sources = [];
   }
 
-  addSource(source: WindowProxy | Worker): void {
-    const allowedSource = this.isAllowedSource(source as any, true);
+  addSource(source: WindowProxy | Worker, origin: string): void {
+    const allowedSource = this.isAllowedSource(source as any, origin);
 
     if (allowedSource) {
       this._sources.push(allowedSource);
@@ -77,23 +74,37 @@ export class WindowProxyCommandSource
   }
 
   protected onSourceMessage = async (ev: MessageEvent<any>): Promise<void> => {
-    if (!this.enabled) {
+    if (!this.composite.enabled) {
       this.unlisten();
       return;
     }
 
-    const { source } = ev;
-    const allowedSource = this.isAllowedSource(source);
+    const { source, origin } = ev;
+    const allowedSource = this.isAllowedSource(source, origin);
     if (allowedSource) {
       this.onRequest(JSON.parse(ev.data), allowedSource).catch(this.onError);
     }
   };
 
+  get composite(): P.RemoteCommandsWindow {
+    return (this._settings?.composite || {}) as P.RemoteCommandsWindow;
+  }
+
   isAllowedSource(
     source: MessageEventSource | null,
-    registering = false
+    origin: string
   ): WindowProxy | null {
-    if (this.enabled && source) {
+    if (!(this.composite.enabled && source)) {
+      return null;
+    }
+
+    const { composite } = this;
+
+    if (composite.allow_same_origin && origin == window.origin) {
+      return source as WindowProxy;
+    }
+
+    if (composite.allowed_origins && composite.allowed_origins.includes(origin)) {
       return source as WindowProxy;
     }
 

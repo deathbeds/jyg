@@ -10,6 +10,7 @@ Resource            ../../resources/Commands.resource
 
 Suite Setup         Set Attempt Screenshot Directory    lab${/}boards
 Test Setup          Execute JupyterLab Command    Close All Tabs
+Test Teardown       Clean Up Board Test
 
 Test Tags           suite:boards
 
@@ -30,3 +31,12 @@ Boards Can Move
     FOR    ${i}    ${area}    IN ENUMERATE    @{BOARD_AREA}
         Move Board To Area    ${area}    01-moved-${i}-${area}.png
     END
+    Move Board To Area    popup    02-removed-popup.png
+
+
+*** Keywords ***
+Clean Up Board Test
+    [Documentation]    Clean up after a test
+    Switch Window    MAIN
+    Execute JupyterLab Command    Close All Tabs
+    Execute JupyterLab Command    Close All Command Boards

@@ -66,6 +66,7 @@ class P:
     ALL_PACKAGE_JSONS = [PACKAGE_JSON]
     MSG_SCHEMA_JSON = PY_SRC / "schema/jyg-msg.v0.schema.json"
     BOARD_SCHEMA_JSON = SCHEMA / "boards.json"
+    PROXY_SCHEMA_JSON = SCHEMA / "window-proxy.json"
     SCRIPTS = ROOT / "scripts"
     PY_SCRIPTS = [*SCRIPTS.glob("*.py")]
     SCRIPT_SCHEMA_TO_PY = SCRIPTS / "schema2typeddict.py"
@@ -148,6 +149,7 @@ class B:
     PAGES_LITE_SHASUMS = PAGES_LITE / "SHA256SUMS"
     EXAMPLE_HTML = BUILD / "examples"
     BOARD_SCHEMA_TS = P.JS / "_boards.ts"
+    PROXY_SCHEMA_TS = P.JS / "_windowProxy.ts"
     MSG_SCHEMA_PY = P.PY_SRC / "schema/msg_v0.py"
     MSG_SCHEMA_TS = P.JS / "_msgV0.ts"
     COVERAGE = BUILD / "coverage"
@@ -957,8 +959,13 @@ def task_build():
         yield dict(
             name="schema:json:ts",
             actions=[["jlpm", "build:schema"]],
-            file_dep=[P.MSG_SCHEMA_JSON, P.BOARD_SCHEMA_JSON, B.YARN_INTEGRITY],
-            targets=[B.MSG_SCHEMA_TS, B.BOARD_SCHEMA_TS],
+            file_dep=[
+                P.MSG_SCHEMA_JSON,
+                P.BOARD_SCHEMA_JSON,
+                P.PROXY_SCHEMA_JSON,
+                B.YARN_INTEGRITY,
+            ],
+            targets=[B.MSG_SCHEMA_TS, B.BOARD_SCHEMA_TS, B.PROXY_SCHEMA_TS],
         )
 
         yield dict(
@@ -1011,7 +1018,13 @@ def task_build():
             uptodate=uptodate,
             name="js",
             actions=[["jlpm", "build:lib"]],
-            file_dep=[*L.ALL_TS, B.YARN_INTEGRITY],
+            file_dep=[
+                *L.ALL_TS,
+                B.YARN_INTEGRITY,
+                B.MSG_SCHEMA_TS,
+                B.BOARD_SCHEMA_TS,
+                B.PROXY_SCHEMA_TS,
+            ],
             targets=[B.JS_META_TSBUILDINFO],
         )
 
