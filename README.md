@@ -2,6 +2,8 @@
 
 > run Jupyter browser client commands from a CLI, REST API, or other browser windows
 
+See the full [documentation on ReadTheDocs](https://jyg.rtfd.io).
+
 ## Installation
 
 > Note: after installing the browser and server extension, you'll need to **restart**
