@@ -1,13 +1,11 @@
 """Command line apps for jyg."""
-import asyncio
 import json
+import urllib.request
 from typing import Any, Dict, List, Optional, cast
 
 import jinja2 as J
 import traitlets as T
 from jupyter_core.application import JupyterApp
-from tornado import httpclient
-from tornado.escape import json_decode, json_encode
 
 from ._version import __version__
 from .schema import msg_v0 as M
@@ -23,12 +21,9 @@ class _BaseApp(JupyterApp):
     description: str = T.Unicode("a jyg application").tag(config=False)
 
 
-class _AsyncApp(_BaseApp):
-    """An ascyn app for jyg."""
+class _APIApp(_BaseApp):
+    """An app that uses the jyg REST API."""
 
-    _client: httpclient.AsyncHTTPClient = T.Instance(httpclient.AsyncHTTPClient).tag(
-        config=False
-    )
     running_servers: List[Dict[str, Any]] = T.List().tag(config=False)
     mimetype: Any = T.Unicode("text/plain").tag(config=True)
     mime_templates: Any = T.Dict().tag(config=True)
@@ -53,14 +48,9 @@ class _AsyncApp(_BaseApp):
             "application/json": "{{ dumps(report, sort_keys=True)  }}",
         }
 
-    @T.default("_client")
-    def _default_client(self) -> httpclient.AsyncHTTPClient:
-        """Get an asynchronous HTTP client."""
-        return httpclient.AsyncHTTPClient()
-
-    async def start_async(self) -> None:
-        """Start the asynchronous activities."""
-        report = await self.report_json()
+    def start(self) -> None:
+        """Start the request activities."""
+        report = self.report_json()
 
         if self.mimetype not in self.mime_templates:  # pragma: no cover
             raise NotImplementedError(self.mimetype)
@@ -70,7 +60,7 @@ class _AsyncApp(_BaseApp):
         result = tmpl.render(report=report, _=self, dumps=json.dumps)
         print(result)
 
-    async def report_json(self) -> Any:
+    def report_json(self) -> Any:
         raise NotImplementedError()
 
     @T.default("running_servers")
@@ -89,24 +79,20 @@ class _AsyncApp(_BaseApp):
         url = ujoin(server["url"], "jyg", *bits) + f"""?token={server["token"]}"""
         return f"{url}"
 
-    async def jyg_request(self, *bits: str, **fetch_kwargs: Any) -> M.AnyResponse:
+    def jyg_request(self, *bits: str, **request_kwargs: Any) -> M.AnyResponse:
         """Make a jyg request."""
         url = self.jyg_url(*bits)
-        response = await self._client.fetch(url, **fetch_kwargs)
-        # TODO: use header
-        return cast(M.AnyResponse, json_decode(response.body))
-
-    def start(self) -> None:
-        """Start the loop and run the start_async method."""
-        asyncio.get_event_loop().run_until_complete(self.start_async())
+        request = urllib.request.Request(url, **request_kwargs)
+        response = urllib.request.urlopen(request)
+        return cast(M.AnyResponse, json.load(response))
 
 
-class JygListApp(_AsyncApp):
+class JygListApp(_APIApp):
     """List jupyter app commands."""
 
-    async def report_json(self) -> Any:
+    def report_json(self) -> Any:
         """Fetch the app info from a running jupyter app."""
-        return await self.jyg_request("commands")
+        return self.jyg_request("commands")
 
     @T.default("mime_templates")
     def _default_mime_templates(self) -> Any:
@@ -128,7 +114,7 @@ class JygListApp(_AsyncApp):
         return mime_templates
 
 
-class JygRunApp(_AsyncApp):
+class JygRunApp(_APIApp):
     """Run jupyter app commands."""
 
     command_id: str = T.Unicode(help="the command to run").tag(config=True)
@@ -141,14 +127,17 @@ class JygRunApp(_AsyncApp):
             self.command_id = self.extra_args[0]
             self.command_args = parse_command_args(self.extra_args[1:])
 
-    async def report_json(self) -> M.AnyResponse:
+    def report_json(self) -> M.AnyResponse:
         """Run a command."""
         if not self.command_id:
             self.log.error("need a command id")
             self.exit(1)
         bits = "commands", self.command_id
-        return await self.jyg_request(
-            *bits, method="POST", body=json_encode(self.command_args)
+        return self.jyg_request(
+            *bits,
+            method="POST",
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            body=json.dumps(self.command_args).encode("utf-8"),
         )
 
     @T.default("mime_templates")
