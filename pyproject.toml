@@ -6,14 +6,14 @@ requires = [
 
 [project]
 name = "jyg"
-version = "0.1.0"
+version = "0.1.1"
 readme = "README.md"
 authors = [
     {name = "jyg contributors", email = "deathbeds@googlegroups.com"},
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
-  "ipython>=8",
+  "jinja2",
   "jupyter-core>=4.7.1",
 ]
 dynamic = [
@@ -29,6 +29,14 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3",
 ]
+[project.optional-dependencies]
+lab = [
+  "jupyterlab<4,>=3.1",
+]
+serverextension = [
+  "jupyter-server",
+]
+
 [project.urls]
 "Bug Tracker" = "https://github.com/deathbeds/jyg/issues"
 "Changelog" = "https://github.com/deathbeds/jyg/blob/main/CHANGELOG.md"
@@ -55,10 +63,10 @@ status = true
 subtasks = true
 
 [tool.mypy]
-cache_dir = 'build/.mypy_cache'
+cache_dir = "build/.mypy_cache"
 sqlite_cache = true
 # language settings
-python_version = '3.8'
+python_version = "3.8"
 allow_redefinition = true
 check_untyped_defs = true
 disallow_untyped_defs = true
@@ -69,6 +77,6 @@ warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
 module = [
-    'importlib.metadata',
+    "importlib.metadata",
 ]
 ignore_missing_imports = true

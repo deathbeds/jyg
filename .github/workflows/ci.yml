@@ -7,6 +7,11 @@ on:
   pull_request:
     branches:
       - '*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   PYTHONUNBUFFERED: '1'
@@ -15,7 +20,7 @@ env:
 
   # our stuff
   ROBOT_RETRIES: '2'
-  CACHE_EPOCH: '1'
+  CACHE_EPOCH: '2'
   DOIT_N_BUILD: '-n4'
   PABOT_PROCESSES: '3'
 
@@ -32,6 +37,8 @@ jobs:
         shell: bash -l {0}
     env:
       BUILDING_IN_CI: '1'
+    outputs:
+      wheel: ${{ steps.wheel.outputs.wheel }}
     steps:
       - uses: actions/checkout@v3
 
@@ -96,6 +103,11 @@ jobs:
       - name: build
         run: doit ${{ env.DOIT_N_BUILD }} dist || doit dist
 
+      - id: wheel
+        name: get wheel name
+        run: |
+          echo "wheel=$(ls dist/*.whl)" >> $GITHUB_OUTPUT
+
       - name: status
         run: doit list --all --status | sort
         if: always()
@@ -105,6 +117,60 @@ jobs:
         with:
           name: jyg-dist-${{ github.run_number }}
           path: ./dist
+
+  smoke:
+    runs-on: ${{ matrix.os }}-latest
+    needs: [build]
+    name: smoke (${{ matrix.os }} ${{ matrix.python-version }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu', 'macos', 'windows']
+        python-version: ['3.8', '3.11']
+    steps:
+      - name: download (dist)
+        uses: actions/download-artifact@v3
+        with:
+          name: jyg-dist-${{ github.run_number }}
+          path: ./dist
+
+      - name: setup (python)
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
+      - name: install dist
+        run: |
+          ls "${{ needs.build.outputs.wheel }}" || dir "${{ needs.build.outputs.wheel }}"
+          pip install -vv "${{ needs.build.outputs.wheel }}"
+          pip check
+
+      - name: cli smoke test
+        run: |
+          jyg --help
+          jupyter-jyg --help
+          python -m jyg --help
+
+      - name: install app
+        run: |
+          pip install jupyterlab
+
+      - name: list dist extensions
+        run: |
+          jupyter labextension list || echo uhoh
+          jupyter server extension list || echo uhoh
+          jupyter serverextension list
+          jupyter labextension list 1>labextensions.txt 2>&1
+          jupyter server extension list 1>server_extensions.txt 2>&1
+          jupyter serverextension list 1>serverextensions.txt 2>&1
+
+      - name: check extensions
+        shell: bash -l {0}
+        run: |
+          grep -iE "@deathbeds/jyg.*OK" labextensions.txt
+          grep -iE "jyg.*OK" server_extensions.txt
+          grep -iE "jyg.*OK" serverextensions.txt
 
   lint:
     runs-on: ${{ matrix.os }}-latest
@@ -178,7 +244,7 @@ jobs:
 
   test:
     needs: [build]
-    name: ${{ matrix.os }} ${{ matrix.python-version }}
+    name: test (${{ matrix.os }} ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false

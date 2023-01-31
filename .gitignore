@@ -1,5 +1,5 @@
 __pycache__/
-_d/
+src/jyg/_d/share/
 .cache/
 .coverage*
 .hypothesis

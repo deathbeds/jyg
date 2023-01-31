@@ -8,6 +8,7 @@ from jupyter_server.base.zmqhandlers import WebSocketHandler, WebSocketMixin
 from jupyter_server.serverapp import ServerApp
 from jupyter_server.utils import url_path_join as ujoin
 from tornado.escape import json_decode
+from tornado.web import authenticated
 
 from .schema import msg_v0 as M
 
@@ -27,6 +28,7 @@ class CommandListHandler(APIHandler):
         self.command_manager = command_manager
         super().initialize(*args, **kwargs)
 
+    @authenticated
     async def get(self) -> None:
         """Get the information about running/known apps."""
         apps = await self.command_manager.get_apps()
@@ -45,6 +47,7 @@ class CommandHandler(APIHandler):
         self.command_manager = command_manager
         super().initialize(*args, **kwargs)
 
+    @authenticated
     async def get(self, command_id: str) -> None:
         """Get the information about a single command."""
         apps = await self.command_manager.get_apps()
@@ -60,6 +63,7 @@ class CommandHandler(APIHandler):
             return
         self.write(app["commands"][command_id])
 
+    @authenticated
     async def post(self, command_id: str) -> None:
         """Run a single command."""
         args = json_decode(self.request.body)
@@ -83,6 +87,7 @@ class CommandWebSocketHandler(WebSocketMixin, WebSocketHandler, JupyterHandler):
         if hasattr(super(), "initialize"):
             super().initialize(*args, **kwargs)
 
+    @authenticated
     def open(self, *args: str, **kwargs: str) -> None:
         """Handle a new websocket."""
         super().open(*args, **kwargs)

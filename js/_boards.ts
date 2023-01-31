@@ -14,8 +14,8 @@ export type LaunchArea = 'main' | 'left' | 'right' | 'popup';
  * Lightweight Command Boards
  */
 export interface CommandBoards {
-  launch_area?: LaunchArea;
   boards?: DefinedBoards;
+  launch_area?: LaunchArea;
   [k: string]: unknown;
 }
 /**
@@ -29,14 +29,6 @@ export interface DefinedBoards {
  */
 export interface CommandBoard {
   /**
-   * The human-readable to show in Command Board launchers
-   */
-  title: string;
-  /**
-   * Relative position of the board in its Category
-   */
-  rank?: number;
-  /**
    * The category of Launcher items and Command Palette entries
    */
   category?: string;
@@ -49,8 +41,16 @@ export interface CommandBoard {
    */
   icon?: string;
   /**
+   * Relative position of the board in its Category
+   */
+  rank?: number;
+  /**
    * The content of the board, as rendered by nunjucks with a variable call 'app' describing the current application
    */
   template: string;
+  /**
+   * The human-readable to show in Command Board launchers
+   */
+  title: string;
   [k: string]: unknown;
 }

@@ -10,16 +10,16 @@
  */
 export interface RemoteCommandsWindow {
   /**
-   * Allow other windows to list and execute commands.
+   * Allow listing and executing commands from this app's base URL
    */
-  enabled?: boolean;
+  allow_same_origin?: boolean;
   /**
    * Patterns for origins allowed to list and execute commands
    */
   allowed_origins?: string[];
   /**
-   * Allow listing and executing commands from this app's base URL
+   * Allow other windows to list and execute commands.
    */
-  allow_same_origin?: boolean;
+  enabled?: boolean;
   [k: string]: unknown;
 }

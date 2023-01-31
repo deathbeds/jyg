@@ -1,13 +1,23 @@
 """Serverextension for jyg."""
-from jupyter_server.serverapp import ServerApp
-from traitlets import Instance
+from typing import TYPE_CHECKING
 
-from .handlers import add_handlers
-from .manager import CommandManager
+if TYPE_CHECKING:
+    from jupyter_server.serverapp import ServerApp
+
+__all__ = ["_load_jupyter_server_extension", "load_jupyter_server_extension"]
 
 
-def load_jupyter_server_extension(nbapp: ServerApp) -> None:
+def _load_jupyter_server_extension(nbapp: "ServerApp") -> None:
     """Create a CommandManager and add handlers."""
+    from traitlets import Instance
+
+    from .handlers import add_handlers
+    from .manager import CommandManager
+
     manager = CommandManager(parent=nbapp)
     add_handlers(nbapp, manager)
     nbapp.add_traits(command_manager=Instance(CommandManager, default_value=manager))
+
+
+# for backwards compatibility
+load_jupyter_server_extension = _load_jupyter_server_extension
