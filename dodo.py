@@ -43,7 +43,6 @@ class P:
     LICENSE = ROOT / "LICENSE"
     DOCS = ROOT / "docs"
     CI = ROOT / ".github"
-    META_YAML = CI / "conda.recipe/meta.yaml"
     SCHEMA = ROOT / "schema"
     YARNRC = ROOT / ".yarnrc"
     YARN_LOCK = ROOT / "yarn.lock"
@@ -85,7 +84,6 @@ class P:
     BUILD_ENV_YAML = REQS / "environment-build.yml"
     LINT_ENV_YAML = REQS / "environment-lint.yml"
     ROBOT_ENV_YAML = REQS / "environment-robot.yml"
-    BOA_ENV_YAML = REQS / "environment-boa.yml"
     ENV_INHERIT = {
         BUILD_ENV_YAML: [BASE_ENV_YAML],
         DEMO_ENV_YAML: [
@@ -95,7 +93,6 @@ class P:
             LINT_ENV_YAML,
             ROBOT_ENV_YAML,
             TEST_ENV_YAML,
-            BOA_ENV_YAML,
         ],
         DOCS_ENV_YAML: [BUILD_ENV_YAML, BASE_ENV_YAML],
         TEST_ENV_YAML: [BASE_ENV_YAML, BUILD_ENV_YAML, ROBOT_ENV_YAML],
@@ -138,7 +135,6 @@ class B:
     STATIC_PKG_JSON = STATIC / C.PACKAGE_JSON
     WHEEL = DIST / f"jyg-{C.VERSION}-py3-none-any.whl"
     SDIST = DIST / f"jyg-{C.VERSION}.tar.gz"
-    CONDA_PKG = DIST / f"conda-bld/noarch/jyg-{C.VERSION}_py0.tar.bz2"
     LITE_SHASUMS = LITE / "SHA256SUMS"
     NPM_TARBALL = DIST / f"deathbeds-jyg-{C.VERSION}.tgz"
     DIST_HASH_DEPS = [NPM_TARBALL, WHEEL, SDIST]
@@ -693,15 +689,6 @@ def task_dist():
         targets=[B.DIST_SHASUMS],
         actions=[(U.hash_files, [B.DIST_SHASUMS, *B.DIST_HASH_DEPS])],
     )
-
-def task_boa():
-    yield dict(
-        name="boa:build",
-        file_dep=[B.SDIST, P.META_YAML],
-        targets=[B.CONDA_PKG],
-        actions=[["conda", "mambabuild", f"--output-folder={B.CONDA_PKG.parent.parent}", P.META_YAML.parent]]
-    )
-
 
 
 def task_dev():

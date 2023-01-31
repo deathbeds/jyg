@@ -70,8 +70,3 @@ dependencies:
   - robotframework-jupyterlibrary >=0.4.1
   - lxml
   ### environment-robot.yml ###
-  ### environment-boa.yml ###
-  - boa
-  - conda-build
-  - doit
-  ### environment-boa.yml ###
