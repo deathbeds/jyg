@@ -49,6 +49,8 @@ class P:
     JS = ROOT / "js"
     EXT_JS_WEBPACK = ROOT / "webpack.config.js"
     PY_SRC = ROOT / "src/jyg"
+    PY_D = PY_SRC / "_d"
+    PY_D_ETC = PY_D / "etc"
     PYPROJECT_TOML = ROOT / C.PYPROJECT_TOML
     DOCS_STATIC = DOCS / "_static"
     DOCS_PY = [*DOCS.glob("*.py")]
@@ -129,7 +131,7 @@ class B:
     JS_META_TSBUILDINFO = BUILD / ".src.tsbuildinfo"
     DOCS_BUILDINFO = DOCS / ".buildinfo"
     LITE = BUILD / "lite"
-    STATIC = P.PY_SRC / f"_d/share/jupyter/labextensions/{C.NPM_NAME}"
+    STATIC = P.PY_D / f"share/jupyter/labextensions/{C.NPM_NAME}"
     STATIC_PKG_JSON = STATIC / C.PACKAGE_JSON
     WHEEL = DIST / f"jyg-{C.VERSION}-py3-none-any.whl"
     SDIST = DIST / f"jyg-{C.VERSION}.tar.gz"
@@ -176,10 +178,12 @@ class L:
     ALL_STYLE_ASSETS = [*P.JS.glob("style/**/*")]
     ALL_CSS = [*P.DOCS_STATIC.rglob("*.css"), *ALL_SRC_CSS]
     ALL_JSON = [
-        *P.ROOT.glob(".json"),
-        *P.JS.glob("*/js/**/*.json"),
-        P.MSG_SCHEMA_JSON,
         *P.ATEST_FIXTURES.rglob("*.jupyterlab-settings"),
+        *P.JS.glob("*/js/**/*.json"),
+        *P.PY_D_ETC.rglob("*.json"),
+        *P.ROOT.glob(".json"),
+        *P.SCHEMA.glob("*.json"),
+        P.MSG_SCHEMA_JSON,
     ]
     ALL_MD = [
         *P.ROOT.glob("*.md"),

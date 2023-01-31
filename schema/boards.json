@@ -1,45 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "jupyter.lab.setting-icon": "jyg:logo",
-  "jupyter.lab.setting-icon-label": "Command Boards",
-  "title": "Command Boards",
-  "description": "Lightweight Command Boards",
-  "type": "object",
-  "properties": {
-    "launch_area": {
-      "title": "Launch Area",
-      "type": "string",
-      "description": "Open Command Boards in an area of the shell, or as a popup (requires accepting pop-ups)",
-      "enum": ["main", "left", "right", "popup"],
-      "default": "right"
-    },
-    "boards": {
-      "type": "object",
-      "title": "Defined Boards",
-      "description": "create Command Boards",
-      "additionalProperties": {
-        "description": "new boards",
-        "$ref": "#/definitions/board"
-      }
-    }
-  },
   "definitions": {
     "board": {
-      "title": "Command Board",
-      "type": "object",
-      "required": [
-        "title",
-        "template"
-      ],
       "properties": {
-        "title": {
-          "description": "The human-readable to show in Command Board launchers",
-          "type": "string"
-        },
-        "rank": {
-          "description": "Relative position of the board in its Category",
-          "type": "number"
-        },
         "category": {
           "description": "The category of Launcher items and Command Palette entries",
           "type": "string"
@@ -52,11 +15,45 @@
           "description": "An SVG string for a command board",
           "type": "string"
         },
+        "rank": {
+          "description": "Relative position of the board in its Category",
+          "type": "number"
+        },
         "template": {
           "description": "The content of the board, as rendered by nunjucks with a variable call 'app' describing the current application",
           "type": "string"
+        },
+        "title": {
+          "description": "The human-readable to show in Command Board launchers",
+          "type": "string"
         }
-      }
+      },
+      "required": ["title", "template"],
+      "title": "Command Board",
+      "type": "object"
     }
-  }
+  },
+  "description": "Lightweight Command Boards",
+  "jupyter.lab.setting-icon": "jyg:logo",
+  "jupyter.lab.setting-icon-label": "Command Boards",
+  "properties": {
+    "boards": {
+      "additionalProperties": {
+        "$ref": "#/definitions/board",
+        "description": "new boards"
+      },
+      "description": "create Command Boards",
+      "title": "Defined Boards",
+      "type": "object"
+    },
+    "launch_area": {
+      "default": "right",
+      "description": "Open Command Boards in an area of the shell, or as a popup (requires accepting pop-ups)",
+      "enum": ["main", "left", "right", "popup"],
+      "title": "Launch Area",
+      "type": "string"
+    }
+  },
+  "title": "Command Boards",
+  "type": "object"
 }

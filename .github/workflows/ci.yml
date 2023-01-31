@@ -114,7 +114,7 @@ jobs:
   smoke:
     runs-on: ${{ matrix.os }}-latest
     needs: [build]
-    name: smoke ${{ matrix.os }} ${{ matrix.python-version }}
+    name: smoke (${{ matrix.os }} ${{ matrix.python-version }})
     strategy:
       fail-fast: false
       matrix:
@@ -236,7 +236,7 @@ jobs:
 
   test:
     needs: [build]
-    name: test ${{ matrix.os }} ${{ matrix.python-version }}
+    name: test (${{ matrix.os }} ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
