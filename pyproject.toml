@@ -14,8 +14,8 @@ authors = [
 requires-python = ">=3.8"
 dependencies = [
   "jinja2",
-  "jupyter-core >=4.7.1",
-  "tornado >=6.1",
+  "jupyter-core>=4.7.1",
+  "tornado>=6.1",
 ]
 dynamic = [
   "description",
