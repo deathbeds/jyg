@@ -20,7 +20,7 @@ env:
 
   # our stuff
   ROBOT_RETRIES: '2'
-  CACHE_EPOCH: '2'
+  CACHE_EPOCH: '3'
   DOIT_N_BUILD: '-n4'
   PABOT_PROCESSES: '3'
 
@@ -123,6 +123,7 @@ jobs:
     needs: [build]
     name: smoke (${{ matrix.os }} ${{ matrix.python-version }})
     strategy:
+      max-parallel: 2
       fail-fast: false
       matrix:
         os: ['ubuntu', 'macos', 'windows']

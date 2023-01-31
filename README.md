@@ -16,21 +16,17 @@ See the full [documentation on ReadTheDocs](https://jyg.rtfd.io).
 
 ### `pip`
 
-> > TBD
-> >
-> > ```bash
-> > pip install jyg jupyterlab
-> > ```
+```bash
+pip install jyg jupyterlab
+```
 
 ### `mamba`
 
-> TBD
->
-> > ```bash
-> > mamba install -c conda-forge jyg jupyterlab python >=3.8
-> > ```
->
-> ... or use `conda` if you _must_.
+```bash
+mamba install -c conda-forge jyg jupyterlab
+```
+
+... or use `conda` if you _must_.
 
 ### Development Install
 
