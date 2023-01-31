@@ -1,6 +1,6 @@
 {
   "name": "@deathbeds/jyg",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "run Jupyter browser client commands from a CLI, REST API, or other browser windows",
   "license": "BSD-3-Clause",
   "author": "jyg contributors",
