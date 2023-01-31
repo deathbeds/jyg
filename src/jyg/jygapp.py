@@ -137,7 +137,7 @@ class JygRunApp(_APIApp):
             *bits,
             method="POST",
             headers={"Content-Type": "application/json; charset=utf-8"},
-            body=json.dumps(self.command_args).encode("utf-8"),
+            data=json.dumps(self.command_args).encode("utf-8"),
         )
 
     @T.default("mime_templates")

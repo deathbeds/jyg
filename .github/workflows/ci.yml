@@ -38,7 +38,7 @@ jobs:
     env:
       BUILDING_IN_CI: '1'
     outputs:
-      wheel: ${{ steps.wheel.outputs.name }}
+      wheel: ${{ steps.wheel.outputs.wheel }}
     steps:
       - uses: actions/checkout@v3
 
@@ -106,8 +106,7 @@ jobs:
       - id: wheel
         name: get wheel name
         run: |
-          cd dist
-          wheel=$(ls *.whl) echo "name=${wheel}" >> $GITHUB_OUTPUT
+          echo "wheel=$(ls dist/*.whl)" >> $GITHUB_OUTPUT
 
       - name: status
         run: doit list --all --status | sort
@@ -143,8 +142,8 @@ jobs:
 
       - name: install dist
         run: |
-          cd dist
-          pip install -vv ${{ needs.build.outputs.wheel }}
+          ls "${{ needs.build.outputs.wheel }}" || dir "${{ needs.build.outputs.wheel }}"
+          pip install -vv "${{ needs.build.outputs.wheel }}"
           pip check
 
       - name: cli smoke test
