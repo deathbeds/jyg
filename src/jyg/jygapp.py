@@ -72,13 +72,23 @@ class _APIApp(_BaseApp):
         running_servers: List[Dict[str, Any]] = []
 
         try:
-            from jupyter_server.serverapp import list_running_servers
+            from jupyter_server import serverapp
 
-            running_servers = [*list_running_servers()]
+            running_servers += [*serverapp.list_running_servers()]
         except:
-            from .utils import simple_list_running_servers
+            pass
 
-            running_servers = [*simple_list_running_servers()]
+        try:
+            from notebook import notebookapp
+
+            running_servers += [*notebookapp.list_running_servers()]
+        except:
+            pass
+
+        if not running_servers:
+            from .utils import fallback_list_running_servers
+
+            running_servers += [*fallback_list_running_servers()]
 
         return running_servers
 

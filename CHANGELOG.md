@@ -4,7 +4,12 @@
 
 ### `jyg 0.1.2`
 
-> TBD
+CLI:
+
+- finds local running `notebook` servers ([#3])
+  - this _also_ requires `jupyter_server 1.x`
+
+[#3]: https://github.com/deathbeds/jyg/issues/9
 
 ### `@deathbeds/jyg 0.1.2`
 

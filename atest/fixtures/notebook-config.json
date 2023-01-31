@@ -1,0 +1,17 @@
+{
+  "LabApp": {
+    "log_level": "DEBUG",
+    "open_browser": false
+  },
+  "NotebookApp": {
+    "nbserver_extensions": {
+      "jyg.serverextension": true
+    },
+    "tornado_settings": {
+      "page_config_data": {
+        "buildCheck": false,
+        "buildAvailable": false
+      }
+    }
+  }
+}

@@ -255,8 +255,10 @@ jobs:
         include:
           - python-version: '3.8'
             CI_ARTIFACT: 'sdist'
+            ROBOT_JP_SERVER_APP: notebook
           - python-version: '3.11'
             CI_ARTIFACT: 'wheel'
+            ROBOT_JP_SERVER_APP: jupyterlab
     env:
       TESTING_IN_CI: '1'
     steps:
@@ -274,6 +276,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
           environment-file: .github/reqs/environment-test.yml
           use-mamba: true
+
+      - name: upgrade jupyter_server
+        if: matrix.python-version == '3.11'
+        shell: bash -l {0}
+        run: |
+          mamba install -yc conda-forge "jupyter_server>=2"
 
       - name: download (dist)
         uses: actions/download-artifact@v3
@@ -307,7 +315,7 @@ jobs:
           verbose: true
           flags: back-end
 
-      - name: upload (atest)
+      - name: upload (reports)
         if: always()
         uses: actions/upload-artifact@v3
         with:

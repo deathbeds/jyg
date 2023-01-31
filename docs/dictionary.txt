@@ -3,6 +3,7 @@ additionalProperties
 anyOf
 args
 backend
+Bootstrap
 Changelog
 className
 CLI
@@ -19,6 +20,7 @@ isToggleable
 isToggled
 isVisible
 jinja2
+jQuery
 JSON
 Jupyter
 jupyterlab

@@ -58,7 +58,10 @@ export class BaseCommandSource<T extends any = any, U extends IOptions = any> {
       if (error) {
         await this.sendError({ error: `${error}`, ...header }, source);
       } else {
-        await this.sendResponse({ content: responseContent, ...header } as any, source);
+        await this.sendResponse(
+          { content: responseContent || null, ...header } as any,
+          source
+        );
       }
     } catch (err) {
       await this.sendError(

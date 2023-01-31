@@ -114,6 +114,7 @@ class E:
     ROBOT_ATTEMPT = json.loads(os.environ.get("ROBOT_ATTEMPT", "0"))
     ROBOT_ARGS = json.loads(os.environ.get("ROBOT_ARGS", "[]"))
     PABOT_ARGS = json.loads(os.environ.get("PABOT_ARGS", "[]"))
+    ROBOT_JP_SERVER_APP = os.environ.get("ROBOT_JP_SERVER_APP", "jupyterlab")
     WITH_JS_COV = bool(json.loads(os.environ.get("WITH_JS_COV", "0")))
     PABOT_PROCESSES = int(json.loads(os.environ.get("PABOT_PROCESSES", "4")))
 
@@ -477,6 +478,7 @@ class U:
             *(["--variable", f"PY:{C.PY_VERSION}"]),
             *(["--variable", f"ROBOCOV:{B.ROBOCOV}"]),
             *(["--variable", f"FIXTURES:{P.ATEST_FIXTURES}"]),
+            *(["--variable", f"JP_SERVER_APP:{E.ROBOT_JP_SERVER_APP}"]),
             # files
             *(["--xunit", out_dir / "xunit.xml"]),
             *(["--outputdir", out_dir]),
